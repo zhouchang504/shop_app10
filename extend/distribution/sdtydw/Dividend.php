@@ -14,6 +14,7 @@ use app\shop\model\OrderModel;
 use app\shop\model\OrderGoodsModel;
 use app\distribution\model\DividendAwardModel;
 use app\distribution\model\DividendRoleModel;
+use app\shop\model\CategoryModel;
 
 class Dividend extends BaseModel
 {
@@ -154,6 +155,7 @@ class Dividend extends BaseModel
         $awardList = (new DividendAwardModel)->order('award_type DESC')->select();//获取全部奖项目,按类型倒序，先处理管理奖
         if (empty($awardList)) return false;
         $dividend_amount = 0;//共分出去的佣金
+        if ($orderInfo['dividend_role_id'] <= 0) return ['dividend_amount' => $dividend_amount];
 
         $nowLevel = 0;//当前处理级别
         $nowLevelOrdinary = [];//普通分销当前处理级别，普通分销有逐级计算和无限级计算，如果无限级，不满条件将一直最后的上级
@@ -273,10 +275,13 @@ class Dividend extends BaseModel
         $buy_goods_name = [];
         foreach ($goodsList as $goods) {
             $order_goods_ids[] = $goods['goods_id'];
+            $order_goods_cids[] = $goods['cid'];
             $order_goods_num += $goods['goods_number'];
             $goods_buy_num[$goods['goods_id']] = $goods['goods_number'];
             $buy_goods_name[] = $goods['goods_name'];
         }
+        $CategoryModel = new CategoryModel();
+        $role_cid = settings('role_cid');
         do {
             $nowLevel += 1;
             $userInfo = $this->UsersModel->info($parentId);//获取会员信息
@@ -291,7 +296,22 @@ class Dividend extends BaseModel
                 $nowLevelOrdinary[$key] += 1;
                 $awardValue = json_decode($award['award_value'], true);    //奖项内容
 
-                if ($award['goods_limit'] == 2) {//购买全部指定分销商品
+                if($award['goods_limit'] == 1){
+                    $isOk = true;
+                    foreach ($order_goods_cids as $cid) {//购买任意分销商品
+                        if (in_array($role_cid,$CategoryModel->getParentCateIds($cid)) == true) {//限制商品存在购买中，成功跳出
+                            $isOk = false;
+                            continue;
+                        }
+                    }
+                    if ($isOk == false) {//不满足购买限制，跳出
+                        continue;
+                    }
+                    $goods_num = count($order_goods_ids) * $award['goods_limit_num'];
+                    if ($order_goods_num < $goods_num) {
+                        continue;
+                    }
+                } elseif ($award['goods_limit'] == 2) {//购买全部指定分销商品
                     $award_limit_buy_goods = explode(',', $award['buy_goods_id']);
                     $isOk = true;
                     foreach ($award_limit_buy_goods as $goods_id) {
@@ -312,6 +332,19 @@ class Dividend extends BaseModel
                     $isOk = false;
                     foreach ($award_limit_buy_goods as $goods_id) {
                         if (in_array($goods_id, $order_goods_ids) == true) {//限制商品存在购买中，成功跳出
+                            $isOk = true;
+                        }
+                    }
+                    if ($isOk == false) {//不满足购买限制，跳出
+                        continue;
+                    }
+                    if ($order_goods_num < $award['goods_limit_num']) {
+                        continue;
+                    }
+                } elseif ($award['goods_limit'] == 5) {//购买指定分类商品
+                    $isOk = false;
+                    foreach ($order_goods_cids as $cid) {
+                        if (in_array($award['class_goods'],$CategoryModel->getParentCateIds($cid)) == true) {//限制商品存在购买中，成功跳出
                             $isOk = true;
                         }
                     }

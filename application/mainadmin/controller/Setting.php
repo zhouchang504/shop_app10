@@ -2,6 +2,7 @@
 namespace app\mainadmin\controller;
 use app\AdminController;
 use app\mainadmin\model\SettingsModel;
+use app\shop\model\GoodsModel;
 /**
  * 设置
  * Class Index
@@ -20,8 +21,10 @@ class Setting extends AdminController
 	//-- 首页
 	/*------------------------------------------------------ */
     public function index(){
-		
-		$this->assign("setting", $this->Model->getRows());
+        $setting = $this->Model->getRows();
+        $ClassList = GoodsModel::getClassList();
+        $this->assign("classListOpt", arrToSel($ClassList, $setting['role_cid']));//身份商品专区分类
+        $this->assign("setting", $setting);
         return $this->fetch();
     }
 	/*------------------------------------------------------ */

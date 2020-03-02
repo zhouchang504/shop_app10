@@ -19,6 +19,7 @@
                     <li><a href="#about_us" data-toggle="tab">关于我们</a></li>
                     <li><a href="#app" data-toggle="tab">APP设置</a></li>
                     <li><a href="#payment" data-toggle="tab">收款方式</a></li>
+                    <li><a href="#orter" data-toggle="tab">其他设置</a></li>
                 </ul>
             </header>
 
@@ -208,6 +209,17 @@
                         <div class="controls col-sm-4 ">
                             <input type="text" name="setting[bank_address]" placeholder="开户行" class="input-max" data-rule-required="true"
                                    value="{$setting.bank_address}">
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane " id="orter">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">身份商品专区：</label>
+                        <div class="controls col-sm-4 ">
+                            <select name="setting[role_cid]"  style="width:50%;" data-toggle="select2" data-placeholder="选择分类" >
+                                <option value="">选择分类</option>
+                                {$classListOpt|raw}
+                            </select>
                         </div>
                     </div>
                 </div>

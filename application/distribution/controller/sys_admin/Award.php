@@ -4,6 +4,7 @@ use app\AdminController;
 use app\distribution\model\DividendAwardModel;
 use app\distribution\model\DividendRoleModel;
 use app\distribution\model\RoleGoodsModel;
+use app\shop\model\GoodsModel;
 
 
 /**
@@ -80,7 +81,9 @@ class Award extends AdminController
 		}		
 		$data['award_value'] = empty($data['award_value']) == false ? $data['award_value'] : '[]';
         $this->assign('roleGoods', (new RoleGoodsModel)->getRows());
-		return $data;
+        $ClassList = GoodsModel::getClassList();
+        $this->assign("classListOpt", arrToSel($ClassList, $data['class_goods']));//身份商品专区分类
+        return $data;
 	}
 	/*------------------------------------------------------ */
 	//-- 添加前处理
@@ -102,6 +105,10 @@ class Award extends AdminController
 		if ($data['goods_limit'] == 4){
             if ($data['role_goods'] < 1){
                 return $this->error('请指定需要购买的身份商品.');
+            }
+        }elseif ($data['goods_limit'] == 5){
+            if ($data['class_goods'] < 1){
+                return $this->error('请指定需要购买的商品分类.');
             }
         }elseif (in_array($data['goods_limit'],[2,3])){
 			$buy_goods_id = input('buy_goods_id');
@@ -151,6 +158,10 @@ class Award extends AdminController
         if ($data['goods_limit'] == 4){
             if ($data['role_goods'] < 1){
                 return $this->error('请指定需要购买的身份商品.');
+            }
+        }elseif ($data['goods_limit'] == 5){
+            if ($data['class_goods'] < 1){
+                return $this->error('请指定需要购买的商品分类.');
             }
         }elseif (in_array($data['goods_limit'],[2,3])){
             $buy_goods_id = input('buy_goods_id');

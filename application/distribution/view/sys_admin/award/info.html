@@ -42,6 +42,7 @@
                     <label><input type="radio" name="goods_limit" value="2" class="js_radio_undertake" data-class="buy_goods" {$row['goods_limit']==2?'checked':''}> 购买全部指定分销商品</label>
                         <label><input type="radio" name="goods_limit" value="3" class="js_radio_undertake" data-class="buy_goods" {$row['goods_limit']==3?'checked':''}> 购买任意指定分销商品</label>
                         <label><input type="radio" name="goods_limit" value="4" class="js_radio_undertake" data-class="role_goods" {$row['goods_limit']==4?'checked':''}> 购买指定身份商品</label>
+                        <label><input type="radio" name="goods_limit" value="5" class="js_radio_undertake" data-class="class_goods" {$row['goods_limit']==5?'checked':''}> 购买指定分类商品</label>
                        <div class="radio_undertake_goods_limit buy_goods  {:in_array($row['goods_limit'],[2,3])?'':'hide'}" ></div>
                         <div class="radio_undertake_goods_limit role_goods  {$row['goods_limit']==4?'':'hide'}" >
                             <select name="role_goods" >
@@ -49,6 +50,12 @@
                                 {volist name="roleGoods" id="rg" }
                                 <option value="{$rg.rg_id}" {$row['role_goods']==$rg['rg_id']?'selected':''}>{$rg.goods_name} - ￥{$rg.sale_price}</option>
                                {/volist}
+                            </select>
+                        </div>
+                        <div class="radio_undertake_goods_limit class_goods  {$row['goods_limit']==5?'':'hide'}" >
+                            <select name="class_goods"  style="width:50%;" data-toggle="select2" data-placeholder="选择分类" >
+                                <option value="">选择分类</option>
+                                {$classListOpt|raw}
                             </select>
                         </div>
                         <div class="m-t" style="position: relative;">

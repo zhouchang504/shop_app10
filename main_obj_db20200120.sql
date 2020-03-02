@@ -10231,7 +10231,7 @@ CREATE TABLE `users_bind_superior` (
   PRIMARY KEY (`user_id`),
   KEY `pid` (`pid`),
   FULLTEXT KEY `superior` (`superior`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------
 -- Records of users_bind_superior
