@@ -155,7 +155,6 @@ class Dividend extends BaseModel
         $awardList = (new DividendAwardModel)->order('award_type DESC')->select();//获取全部奖项目,按类型倒序，先处理管理奖
         if (empty($awardList)) return false;
         $dividend_amount = 0;//共分出去的佣金
-        if ($orderInfo['dividend_role_id'] <= 0) return ['dividend_amount' => $dividend_amount];
 
         $nowLevel = 0;//当前处理级别
         $nowLevelOrdinary = [];//普通分销当前处理级别，普通分销有逐级计算和无限级计算，如果无限级，不满条件将一直最后的上级
@@ -290,6 +289,7 @@ class Dividend extends BaseModel
                 if ($award['goods_limit'] == 4) {//身份分销的跳过
                     continue;
                 }
+                if($award['goods_limit'] != 5 && $orderInfo['dividend_role_id'] <= 0) continue;
                 if (isset($nowLevelOrdinary[$key]) == false) {
                     $nowLevelOrdinary[$key] = 0;
                 }
@@ -440,8 +440,38 @@ class Dividend extends BaseModel
                     $res = $this->Model->create($inArr);
                     if ($res->log_id < 1) return false;
                 }
-            }
 
+                if ($award['buy_user_award'] > 0) {//购买者自返
+                    if ($award['buy_user_award_type'] == 'money') {//固定金额
+                        $inArr['dividend_amount'] = $award['buy_user_award'];
+                    } else {//订单百分比，扣除运费后计算
+                        $amount = $orderInfo['order_amount'] - $orderInfo['shipping_fee'];
+                        $inArr['dividend_amount'] = $amount / 100 * $award['buy_user_award'];
+                        if ($inArr['dividend_amount'] <= 0){//佣金小于等于0，跳过
+                            continue;
+                        }
+                    }
+                    $inArr['status'] = $status;
+                    $inArr['order_type'] = $orderInfo['d_type'];
+                    $inArr['order_id'] = $orderInfo['order_id'];
+                    $inArr['order_sn'] = $orderInfo['order_sn'];
+                    $inArr['buy_uid'] = $orderInfo['user_id'];
+                    $inArr['order_amount'] = $amount;
+                    $inArr['dividend_uid'] = $buyUserInfo['user_id'];
+                    $inArr['role_id'] = $buyUserInfo['role_id'] * 1;
+                    $inArr['role_name'] = $buyUserInfo['role_id'] > 0 ? $buyUserInfo['role']['role_name'] : '粉丝';
+                    $inArr['level'] = $nowLevel;
+                    $inArr['award_id'] = $award['award_id'];
+                    $inArr['award_name'] = $award['award_name'];
+                    $inArr['level_award_name'] = '自购返佣';
+
+                    $dividend_amount += $inArr['dividend_amount'];
+                    $inArr['add_time'] = $inArr['update_time'] = time();
+                    $res = $this->Model->create($inArr);
+                    if ($res->log_id < 1) return false;
+                }
+                unset($award);
+            }
             if (empty($awardList) == true) {//没有奖项可分了，终止
                 $parentId = 0;
             }

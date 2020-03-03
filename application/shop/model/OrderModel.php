@@ -866,10 +866,34 @@ class OrderModel extends BaseModel
             Db::rollback();// 回滚事务
             return '佣金处理失败.';
         }
-        Db::commit();// 提交事务
 
         $upData['is_pay_eval'] = 2;
         $this->where('order_id',$orderInfo['order_id'])->update($upData);
+
+        $UsersModel = new \app\member\model\UsersModel();
+        $user_role = $UsersModel->where('user_id',$orderInfo['user_id'])->value('role_id');
+        if($user_role <= 0){
+            $role_cid = settings('role_cid');
+            $OrderGoods = (new OrderGoodsModel)->where('order_id',$orderInfo['order_id'])->select()->toArray();
+            if($OrderGoods)foreach ($OrderGoods as $v){
+                $category_pid_arr = (new \app\shop\model\CategoryModel)->getParentCateIds($v['cid']);
+                if(in_array($role_cid,$category_pid_arr)){//判断是否在身份专区分类下
+                    $UsersModel->where('user_id',$orderInfo['user_id'])->update(['role_id'=>1]);
+                }
+            }
+        }
+        Db::commit();// 提交事务
         return true;
+    }
+    /*------------------------------------------------------ */
+    //-- 计算某会员购买某分类商品数量
+    /*------------------------------------------------------ */
+    function buyGoodsNum($user_id,$cids){
+        if($user_id <= 0 || count($cids) <= 0)return false;
+        return $this->alias('i')
+            ->join('shop_order_goods g','i.order_id=g.order_id')
+            ->where(['i.user_id'=>$user_id,'pay_status'=>1])
+            ->where('g.cid',['in',$cids])
+            ->count();
     }
 }

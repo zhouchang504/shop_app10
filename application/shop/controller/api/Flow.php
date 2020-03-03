@@ -248,6 +248,14 @@ class Flow extends ApiController
             $bonus = $BonusModel->binfo($used_bonus_id);
         }
 
+        $OrderModel = new OrderModel();
+        $role_cid = settings('role_cid');
+        $Category = new CategoryModel();
+        $role_cids = $Category->getSonCateIds($role_cid);
+        $role_cids[] = $role_cid;
+        $buying_pro_num = 0;//现在要购买的身份商品数量
+        $buyed_pro_num = $OrderModel->buyGoodsNum($this->userInfo['user_id'],$role_cids);//已购买的身份商品数量
+
         $GoodsModel = new GoodsModel();
         $supplyer_ids = [];//供应商ID
 
@@ -261,6 +269,7 @@ class Flow extends ApiController
         $cartList['use_bonus_goods_amount'] = 0;//使用了优惠券的商品总额
         // 验证购物车中的商品能否下单
         foreach ($cartList['goodsList'] as $key => $grow) {
+            if(in_array($grow['cid'],$role_cids))$buying_pro_num += $grow['goods_number'];
             $goods = $GoodsModel->info($grow['goods_id']);
             //活动信息相关：1-限时优惠
             $promInfo = [];
@@ -321,6 +330,13 @@ class Flow extends ApiController
             if (empty($promInfo) == false) {
                 $allFavourId[$promInfo['data']['goods']['fa_id']] = $promInfo['data']['goods']['fa_id'];
             }
+        }
+
+        if($buying_pro_num > 1){
+            $this->error('身份商品只能购买单个.');
+        }
+        if($buyed_pro_num > 0 && $buying_pro_num > 0){
+            return $this->error('您已购买过身份商品，请勿重复下单.');
         }
 
         if (empty($supplyer_ids) == false){
@@ -424,7 +440,6 @@ class Flow extends ApiController
         $shop_reduce_stock = settings('shop_reduce_stock');
         $inArr['is_stock'] = $shop_reduce_stock == 0 ? 1 : 0;
         Db::startTrans();//启动事务
-        $OrderModel = new OrderModel();
         $inArr['order_sn'] = $OrderModel->getOrderSn();
         $res = $OrderModel->save($inArr);
         if ($res < 1) {

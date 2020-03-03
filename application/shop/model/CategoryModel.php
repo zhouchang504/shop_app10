@@ -58,4 +58,29 @@ class CategoryModel extends BaseModel
         $arr[] = $row['id'];
         return $this->getParentCateIds($row['pid'],$arr);
     }
+    /*------------------------------------------------------ */
+    // * 获取某类别子级的ID
+    //* *@param string $cid  分类ID
+    // * @param array $arr 数组
+    /*------------------------------------------------------ */
+    function getSonCateIds($cid, $arr = array())
+    {
+        if(!is_array($cid)){
+            if ($cid < 1)return $arr;
+            $cid = [$cid];
+        }else{
+            if (count($cid)<1)return $arr;
+        }
+        $row = $this->where('pid',['in',$cid])->select()->toArray();
+        if (empty($row)) {
+            return $arr;
+        }else{
+            foreach ($row as $v){
+                $_row[] = $v['id'];
+            }
+        }
+        if(count($arr)<1)$arr = $cid;
+        $arr = array_merge($arr,$_row);
+        return $this->getSonCateIds($_row,$arr);
+    }
 }
