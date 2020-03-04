@@ -308,6 +308,8 @@ class AfterSale extends AdminController
             }
 
         }
+        //身份商品取消降级
+        $OrderModel->demoteLevel($asInfo['order_id']);
         if ($isForce==true){
             $log = '强制执行-确定收到退货，并打款给用户';
         }else{

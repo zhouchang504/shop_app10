@@ -8,6 +8,7 @@ use think\Db;
 
 use app\member\model\AccountLogModel;
 use app\member\model\AccountModel;
+use app\member\model\UsersModel;
 
 //*------------------------------------------------------ */
 //-- 订单表
@@ -421,6 +422,8 @@ class OrderModel extends BaseModel
                         return '请求退款接口失败：' . $res;
                     }
                 }
+                //身份商品取消降级
+                $this->demoteLevel($order_id);
             }
 
         } elseif ($upData['shipping_status'] == $this->config['SS_SHIPPED'] && $orderInfo['shipping_status'] == $this->config['SS_UNSHIPPED']) {//发货
@@ -892,8 +895,28 @@ class OrderModel extends BaseModel
         if($user_id <= 0 || count($cids) <= 0)return false;
         return $this->alias('i')
             ->join('shop_order_goods g','i.order_id=g.order_id')
-            ->where(['i.user_id'=>$user_id,'pay_status'=>1])
+            ->where(['i.user_id'=>$user_id,'pay_status'=>1,'i.is_after_sale'=>0])
             ->where('g.cid',['in',$cids])
             ->count();
+    }
+    /*------------------------------------------------------ */
+    //-- 判断是否降级，退货退款时触发
+    /*------------------------------------------------------ */
+    function demoteLevel($order_id){
+        $orderInfo = $this->where('order_id', $order_id)->find();
+        $role_num = false;
+        $role_cid = settings('role_cid');
+        $Category = new CategoryModel();
+        $role_cids = $Category->getSonCateIds($role_cid);
+        $role_cids[] = $role_cid;
+        $OrderGoodsModel = new OrderGoodsModel();
+        $orderGoodsInfo = $OrderGoodsModel->where('order_id', $order_id)->select();
+        if($orderGoodsInfo)foreach ($orderGoodsInfo as $k=>$v){
+        if(in_array($v['cid'],$role_cids))$role_num = true;
+        }
+        if($role_num) {
+            $UsersModel = new UsersModel();
+            $UsersModel->where('user_id',$orderInfo['user_id'])->update(['role_id'=>'0']);
+        }
     }
 }
