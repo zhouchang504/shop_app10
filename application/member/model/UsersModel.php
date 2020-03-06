@@ -147,7 +147,7 @@ class UsersModel extends BaseModel
             $wxInfo['wxuid'] = 0;
         }
         $inArr['pid'] = 0;
-        $inArr['role_id'] = 1;
+//        $inArr['role_id'] = 1;//一注册就是会员
         //分享注册
         if ($is_admin == false) {
             if ($wxInfo['wxuid'] > 0) {//微信访问根据微信分享来源记录，执行
