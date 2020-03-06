@@ -27,16 +27,33 @@ class ShippingLogModel extends BaseModel
 			 $fun = str_replace('/','\\','/shipping/'.$shop_shippping_view_fun);
        	 	 $Class = new $fun();
 			 $res = $Class->getLog($orderInfo['shipping_code'],$orderInfo['invoice_no'],$orderInfo['mobile']);
-			 if ($res['code'] == 0) return $res['msg']; 
-			
-			 if (empty($info)== false){
-				 $info['data'] = $res['data'];
-				 $this->where('order_id',$orderInfo['order_id'])->update(['data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
-			 }else{
-				 $info['order_id'] = $orderInfo['order_id'];
-				 $info['data'] = $res['data'];
-				 $this->save(['order_id'=>$orderInfo['order_id'],'data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
-			 }			
+			 if($shop_shippping_view_fun=='Kdn'){
+                 if ($res['Success'] == false) return $res['Reason'];
+                 foreach ($res['Traces'] as $k=>$v){
+                     $res['data'][$k]['time'] = $v['AcceptTime'];
+                     $res['data'][$k]['context'] = $v['AcceptStation'];
+                 }
+                 if (empty($info)== false){
+                     $info['data'] = $res['data'];
+                     $this->where('order_id',$orderInfo['order_id'])->update(['data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
+                 }else{
+                     $info['order_id'] = $orderInfo['order_id'];
+                     $info['data'] = $res['data'];
+                     $this->save(['order_id'=>$orderInfo['order_id'],'data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
+                 }
+             }else{
+                 if ($res['code'] == 0) return $res['msg'];
+
+                 if (empty($info)== false){
+                     $info['data'] = $res['data'];
+                     $this->where('order_id',$orderInfo['order_id'])->update(['data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
+                 }else{
+                     $info['order_id'] = $orderInfo['order_id'];
+                     $info['data'] = $res['data'];
+                     $this->save(['order_id'=>$orderInfo['order_id'],'data'=>json_encode($res['data'],JSON_UNESCAPED_UNICODE),'update_time'=>time()]);
+                 }
+             }
+
 		}else{
 			$info['data'] = json_decode($info['data'],true);
 		}

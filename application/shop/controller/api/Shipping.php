@@ -26,7 +26,7 @@ class Shipping extends ApiController
 		$orderInfo['shipping_code'] = $shipping[$orderInfo['shipping_id']]['shipping_code'];
 		$ShippingLogModel = new ShippingLogModel();
 		$res = $ShippingLogModel->getInfo($orderInfo);
-		if (is_array($res) == false) return $this->error($res);	
+		if (is_array($res) == false) return $this->error($res);
 		foreach ($res['data'] as $key=>$row){
 			$row['_time'] = explode(' ',$row['time']);
 			$row['isend'] = strstr($row['context'],'签收')?1:0;
