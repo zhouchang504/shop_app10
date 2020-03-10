@@ -7,7 +7,7 @@
                 <li>
                     <i class="fa fa-ellipsis-v"></i>
                     <strong>{$row['level_id']>0?'编辑':'添加'}身份</strong>
-                </li>                                  
+                </li>
             </ul>
            <a class="text-muted pull-right pointer p-r m-t-md" data-toggle="back" title="返回"><i class="fa fa-reply"></i></a>
         </div>
@@ -15,13 +15,13 @@
 <section class="scrollable  wrapper w-f">
  <form class="form-horizontal form-validate" method="post" action="{:url('info')}" style="padding:0;">
         <section class="panel panel-default">
-                <div class="panel-body">            			
+                <div class="panel-body">
                 		<div class="form-group">
                             <label class="control-label">身份名称：</label>
                             <div class="col-sm-6">
                                 <input type="text" class="input-large" data-rule-maxlength="20" data-rule-required="true" name="role_name" value="{$row.role_name}" ><span class="maroon">*</span>
                             </div>
-                        </div> 
+                        </div>
                          <div class="form-group">
                             <label class=" control-label"> 级别：</label>
                             <div class="col-sm-6 ">
@@ -32,10 +32,10 @@
                         <label class="control-label">升级设置：</label>
                         <div class="col-sm-6" >
                             <select name="upleve_function" id="upleve_function"  >
-                               
-                                {volist name="upLevel" id="val"}	
-                                        <option value="{$val.function}" {$row['upleve_function'] == $val['function']?'selected':''} 
-                                        data-jsonval='{$val.val|json_encode}' data-explain="{$val.explain}">{$val.name}</option>            
+
+                                {volist name="upLevel" id="val"}
+                                        <option value="{$val.function}" {$row['upleve_function'] == $val['function']?'selected':''}
+                                        data-jsonval='{$val.val|json_encode}' data-explain="{$val.explain}">{$val.name}</option>
                                 {/volist}
                             </select>
                             <input name="uplevel_fun_name" id="uplevel_fun_name" type="hidden" value="{$row.uplevel_fun_name}" />
@@ -43,7 +43,7 @@
                         </div>
               		</div>
                  <div id="upleve_function_box" class="panel-default">
-                    	
+
             	</div>
             </div>
         </section>
@@ -61,7 +61,7 @@
 {include file="shop@/sys_admin/goods/sel_goods" /}
 
 {literal}
-<script type="text/html" id="upLevel_tpl"> 
+<script type="text/html" id="upLevel_tpl">
 <div class="form-group">
 	  <label class="control-label">详细说明：</label>
 	  <div class="col-sm-8 m-t-mc">{{explain}}</div>
@@ -79,12 +79,12 @@
 			<input type="text" name="function_val[{{item.name}}][{{role.role_id}}]"  class="input-ssmall" data-rule-required="true" value="0"><span class="help-inline">{{item.tip}}</span>
 			{{/if}}
 		  </div>
-	</div>	  
+	</div>
 	{{/each}}
 {{else}}
 <div class="form-group">
         <label class=" control-label">{{item.text}}：</label>
-        <div class="col-sm-9" >			
+        <div class="col-sm-9" >
 			{{if item.rule == 'ismoney' || item.rule == 'integer'}}
 				<input type="text" name="function_val[{{item.name}}]"  class="input-ssmall" data-rule-required="true" data-rule-{{item.rule}}="true" value="{{value[item.name]}}">
 				<span class="help-inline">{{item.tip}}</span>
@@ -103,8 +103,8 @@
 {{/if}}
 {{/each}}
 
-</script>  
-{/literal} 
+</script>
+{/literal}
 <script type="text/javascript">
 var upleve_value = {$row['function']|json_encode|raw};
 var arr = [];
@@ -113,7 +113,7 @@ arr.roleList = {$roleList|json_encode|raw};
 
 function upleveFunction(){
 	$("#upleve_function_box").html('');
-	var obj = $('#upleve_function').find('option:selected');		
+	var obj = $('#upleve_function').find('option:selected');
 	var jsonval = obj.data('jsonval');
 	if (typeof(jsonval) == 'undefined') return false;
 	$('#uplevel_fun_name').val(obj.text());
