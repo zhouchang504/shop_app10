@@ -10,7 +10,7 @@
         <div class="money">
             <p class="fs48 num color_w balance_money">0.00</p>
             <a href="{:url('withdraw/index')}" class="fs24 color_w withdrwa_btn ">提现</a>
-            <span class="fs26 color_w">积分</span><p class="fs48 num color_w use_integral">0</p>
+            <span class="fs26 color_w hide">积分</span><p class="fs48 num color_w use_integral hide">0</p>
 
 
         </div>
@@ -43,7 +43,7 @@
             <div><img src="__STATIC__/mobile/default/images/wallet01.png" alt=""><span class="fs30 fw_b color_3">余额明细</span></div>
             <img src="__STATIC__/mobile/default/images/rightIcon.png" alt="" class="rightIcon">
         </a>
-        <a href="{:url('mylog',array('type'=>'score'))}">
+        <a href="{:url('mylog',array('type'=>'score'))}" class="hide">
             <div><img src="__STATIC__/mobile/default/images/wallet01.png" alt=""><span class="fs30 fw_b color_3">积分明细</span></div>
             <img src="__STATIC__/mobile/default/images/rightIcon.png" alt="" class="rightIcon">
         </a>
@@ -51,7 +51,7 @@
             <div><img src="__STATIC__/mobile/default/images/wallet01.png" alt=""><span class="fs30 fw_b color_3">提现记录</span></div>
             <img src="__STATIC__/mobile/default/images/rightIcon.png" alt="" class="rightIcon">
         </a>
-        <a href="{:url('rechargeLog')}">
+        <a href="{:url('rechargeLog')}" class="hide">
             <div><img src="__STATIC__/mobile/default/images/wallet01.png" alt=""><span class="fs30 fw_b color_3">充值记录</span></div>
             <img src="__STATIC__/mobile/default/images/rightIcon.png" alt="" class="rightIcon">
         </a>
@@ -61,7 +61,7 @@
         </a> -->
     </div>
 </div>
-<div class="button">
+<div class="button hide">
     <a href="{:url('recharge')}" class="fs32 fw_b BGcolor_r color_w">充值</a>
 </div>
 
