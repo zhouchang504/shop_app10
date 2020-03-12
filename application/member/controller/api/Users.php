@@ -244,7 +244,7 @@ class Users extends ApiController
             case 'wait_balance_money'://等待分佣金
                 $where[] = ['add_time', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
                 $where[] = ['dividend_amount', '<>', 0];
-                $where[] = ['status', , 'in', [1, 4]];
+                $where[] = ['status', 'in', [1, 4]];
                 break;
             case 'arrival_balance_money'://金币已到帐明细
                 $where[] = ['add_time', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
