@@ -251,8 +251,10 @@ $(function () {
     var buyMessege = "{$buyMessege}";
 	//点击购买按钮
 	$('.buyBtn ').on('click', function () {
-	    if(buyMessege)
+	    if(buyMessege){
+            buyMessege = "";
 	        _alert("如果您先购买身份产品成为我们的会员是可以享受会员权益的");
+        }
 		var obj = $(this);
 		if (obj.data('type') == 'show') {
 			$('.modelSize').show();
