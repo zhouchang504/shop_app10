@@ -59,7 +59,7 @@ class CategoryModel extends BaseModel
         return $this->getParentCateIds($row['pid'],$arr);
     }
     /*------------------------------------------------------ */
-    // * 获取某类别子级的ID
+    // * 获取某类别子级的ID（不包含自身）
     //* *@param string $cid  分类ID
     // * @param array $arr 数组
     /*------------------------------------------------------ */

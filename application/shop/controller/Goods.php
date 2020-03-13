@@ -5,6 +5,7 @@
 /*------------------------------------------------------ */
 namespace app\shop\controller;
 use app\ClientbaseController;
+use app\shop\model\CategoryModel;
 use app\shop\model\GoodsModel;
 use app\shop\model\CartModel;
 
@@ -38,6 +39,12 @@ class Goods extends ClientbaseController{
         $goods_id = input('id',0,'intval');
         if ($goods_id < 1) return $this->error('传参错误.');
         $goods = $this->Model->info($goods_id);
+        $role_cid = settings('role_cid');
+        $CategoryModel = new CategoryModel();
+        $ParentCateIds = $CategoryModel->getParentCateIds($goods['cid']);
+        if(!in_array($role_cid,$ParentCateIds) && $this->userInfo['role_id']<1){
+            $this->assign('buyMessege', 1);
+        }
         if (empty($goods)){
             return $this->error('商品不存在.');
         }

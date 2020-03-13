@@ -6,7 +6,7 @@
 {if condition="$is_order == 1"}
     <section class="panel panel-default ">
         {if condition="$isClearSetTip == true"}
-        <header class="panel-heading font-bold red">
+        <header class="panel-heading font-bold red hide">
             检测到网站发现变化，是否要清理相关配置，<a href="{:url('mainadmin/backup_db/clear')}" class="btn btn-sm" >前往清理</a>
         </header>
         {/if}
