@@ -279,6 +279,7 @@ class Users extends ApiController
             $row['status'] = $lang['ds'][$row['status']];
             $return['list'][] = $row;
         }
+        $return['income'] = round($return['income'],2);
         return $this->ajaxReturn($return);
     }
     /*------------------------------------------------------ */
