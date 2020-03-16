@@ -129,7 +129,7 @@ class WeiXinMsgTplModel extends BaseModel
         }
         list($first,$tpl_keys,$remark) = $this->replaceTpl($data,$tplData);
 
-        $msgTemp['data']['first']['value'] = $first;
+        $msgTemp['data']['first']['value'] = empty($first)?'消息标题.':$first;
         $tpl_keys = json_decode($tpl_keys,true);
         foreach ($tpl_keys as $key=>$tplkey){
             $msgTemp['data']['keyword'.$key]['value'] = $tplkey;
