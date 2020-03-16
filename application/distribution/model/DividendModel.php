@@ -126,7 +126,6 @@ class DividendModel extends BaseModel
                 $changedata['change_desc'] = '订单佣金到帐';
                 $changedata['change_type'] = 4;
             }
-            $this->Model->sendMsg('sign', $row['order_id'], "佣金到帐");//发送模板消息
             $changedata['by_id'] = $row['order_id'];
             $changedata['balance_money'] = $row['dividend_amount'];
             $changedata['bean_value'] = $row['dividend_bean'];
