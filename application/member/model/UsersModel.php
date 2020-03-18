@@ -63,6 +63,13 @@ class UsersModel extends BaseModel
         $upData['login_ip'] = request()->ip();
         $upData['last_login_time'] = $userInfo['login_time'];
         $upData['last_login_ip'] = $userInfo['login_ip'];
+        $wxInfo = session('wxInfo');
+        if (empty($wxInfo) == false){
+            (new \app\weixin\model\WeiXinUsersModel)->where('wxuid',$wxInfo['wxuid'])->update(['user_id'=>$userInfo['user_id']]);
+            if (!$userInfo['headimgurl']){
+                $upData['headimgurl'] = $wxInfo['wx_headimgurl'];
+            }
+        }
 
 
         $this->where('user_id', $userInfo['user_id'])->update($upData);
@@ -73,10 +80,6 @@ class UsersModel extends BaseModel
         $inLog['user_id'] = $userInfo['user_id'];
         $LogLoginModel->save($inLog);
         $this->userInfo = $this->info($userInfo['user_id']);//附值全局
-        $wxInfo = session('wxInfo');
-        if (empty($wxInfo) == false){
-            (new \app\weixin\model\WeiXinUsersModel)->where('wxuid',$wxInfo['wxuid'])->update(['user_id'=>$userInfo['user_id']]);
-        }
         //判断订单模块是否存在
         if (class_exists('app\shop\model\OrderModel')) {
             //执行订单自动签收
