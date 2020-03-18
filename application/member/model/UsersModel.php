@@ -221,6 +221,8 @@ class UsersModel extends BaseModel
         $inArr['token'] = $this->getToken();
         $inArr['reg_time'] = $time;
 
+        $inArr['headimgurl'] = $wxInfo['wx_headimgurl'];
+
         if ($wxuid == 0) {//如果微信UID为0，启用事务，不为0时，外部已启用
             Db::startTrans();
         }
