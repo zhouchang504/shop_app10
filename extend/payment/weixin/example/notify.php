@@ -41,13 +41,13 @@ class PayNotifyCallBack extends WxPayNotify
 
         if (!array_key_exists("transaction_id", $data)) {
             $msg = "输入参数不正确";
-            //Log::DEBUG("call back:" . $msg);
+            Log::DEBUG("call back:" . $msg);
             return false;
         }
         //查询订单，判断订单真实性
         if (!$this->Queryorder($data["transaction_id"])) {
             $msg = "订单查询失败";
-            //Log::DEBUG("call back:" . $msg);
+            Log::DEBUG("call back:" . $msg);
             return false;
         }
 
