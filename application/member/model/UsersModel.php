@@ -38,7 +38,7 @@ class UsersModel extends BaseModel
         $mobile = $data['mobile'] * 1;
         $userInfo = $this->where('mobile', $mobile)->find();
         if (empty($userInfo)) {
-            return langMsg('用户不存在.','member.login.not_exist');
+            return langMsg('用户密码不正确.','member.login.not_exist');
         }
         if ($userInfo['is_ban'] == 1){
             return langMsg('用户已被禁用.','member.login.is_ban');
