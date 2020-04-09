@@ -123,7 +123,7 @@ class Comment extends ApiController
 		$inArr['order_id'] = $ogoods['order_id'];
 		$inArr['user_id'] = $this->userInfo['user_id'];
 		$inArr['user_name'] = $this->userInfo['nick_name'];
-		$inArr['headimgurl'] = $this->userInfo['headimgurl'];
+        $inArr['headimgurl'] = $this->userInfo['headimgurl']?$this->userInfo['headimgurl']:"";
 		$inArr['create_time'] = time();
 		$GoodsCommentModel = new GoodsCommentModel();
 		$res = $GoodsCommentModel->save($inArr);

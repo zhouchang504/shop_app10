@@ -307,7 +307,6 @@ class Users extends ApiController
         $upArr['signature'] = input('signature', '', 'trim');
         $upArr['sex'] = input('sex', '男', 'trim');
         $upArr['sex'] = $upArr['sex'] == '男' ? 1 : 0;
-        $upArr['birthday'] = input('birthday', '', 'trim');
         $upArr['show_mobile'] = input('show_mobile', 0, 'intval');
         //验证数据是否出现变化
         $dbarr = $this->Model->field(join(',',array_keys($upArr)))->where('user_id',$this->userInfo['user_id'])->find()->toArray();

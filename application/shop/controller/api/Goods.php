@@ -60,7 +60,7 @@ class Goods extends ApiController
         
         $sqlOrder = input('order','','trim');
         $sort_by = strtoupper(input('sort','DESC','trim'));
-	$this->sqlOrder = "is_best DESC";
+//	$this->sqlOrder = "is_best DESC";
          if (empty($sqlOrder)){
 
             $search['is_best'] = input('is_best',0,'intval');

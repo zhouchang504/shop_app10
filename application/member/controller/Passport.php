@@ -44,7 +44,7 @@ class Passport  extends ClientbaseController{
         $register_must_invite = settings('register_must_invite');
         $this->assign('register_must_invite', $register_must_invite);
         $share_token = '';
-        if ($register_must_invite == 1){
+        if ($register_must_invite == 1 || 1==1){
             $wxInfo = session('wxInfo');
             if (empty($wxInfo) == false) {//微信访问根据微信分享来源记录，执行
                 $bind_share_rule = settings('bind_share_rule');
@@ -58,6 +58,7 @@ class Passport  extends ClientbaseController{
                 $share_token = session('share_token');
             }
         }
+        $this->assign('register_must_invite', $register_must_invite);
         $this->assign('share_token', $share_token);
         return $this->fetch('register');
     }
