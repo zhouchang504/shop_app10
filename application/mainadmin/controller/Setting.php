@@ -23,7 +23,6 @@ class Setting extends AdminController
     public function index(){
         $setting = $this->Model->getRows();
         $ClassList = GoodsModel::getClassList();
-        $this->assign("classListOpt", arrToSel($ClassList, $setting['role_cid']));//身份商品专区分类
         $this->assign("setting", $setting);
         return $this->fetch();
     }
