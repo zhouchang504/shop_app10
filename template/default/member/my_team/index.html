@@ -1,6 +1,9 @@
 {extend name="layouts@base" /}
 {block name="head"}
 <link rel="stylesheet" href="__STATIC__/mobile/default/css/allFans.css" />
+<style>
+	.cellBox .moneyInfo div span.w2rem{ width: 1rem; text-align: center; padding: 0.05rem 0; border-radius: 0.1rem}
+</style>
 {/block}
 {block name="main" }
 <div class="page-bd">
@@ -48,6 +51,7 @@
 		<div>银行卡号：{{item.banknumber}}</div>
 		<div>开户行地址：{{item.bankaddress}}</div>
 		<div>住址：{{item.address}}</div>
+		<div><span class="fs22 color_w BGcolor_r fw_b w2rem" onclick="addMemberOrder({{item.member_id}})">报单</span></div>
 	</div>
 </div>
 {{/each}}
@@ -158,6 +162,9 @@ $('.tabBox').on('click','.cellBox .right',function(){
 		imgObj.attr('data-type','0')
 	}
 })
+	function addMemberOrder(member_id){
+    	location.href = "/member/center/addMemberOrder/member_id/"+member_id;
+	}
 
 </script>
 {/block}

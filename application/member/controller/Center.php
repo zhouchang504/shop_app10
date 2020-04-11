@@ -107,7 +107,15 @@ class Center  extends ClientbaseController{
     //-- 添加虚拟会员
     /*------------------------------------------------------ */
     public function addMember(){
-        $this->assign('title', '添加银行卡');
+        $this->assign('title', '录入会员');
         return $this->fetch('add_member');
+    }
+    /*------------------------------------------------------ */
+    //-- 会员报单
+    /*------------------------------------------------------ */
+    public function addMemberOrder(){
+        $this->assign('title', '会员报单');
+        $this->assign('member_id', input('member_id'));
+        return $this->fetch('add_member_order');
     }
 }?>

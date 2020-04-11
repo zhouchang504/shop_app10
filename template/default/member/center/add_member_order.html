@@ -1,0 +1,54 @@
+{extend name="layouts@base" /}
+{block name="head"}
+<link rel="stylesheet" href="__STATIC__/mobile/default/css/userData.css" />
+{/block}
+{block name="main" }
+<div class="page-bd userData">
+    <!-- 页面内容-->
+    <div class="cells">
+        <div class="cell">
+        	<div class="cell_hd"><span class="fs28 color_3 fw_b">会员ID</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b color_3" id="member_id" placeholder="请输入会员ID" value="{$member_id}">
+            </div>
+        </div>
+        <div class="cell">
+        	<div class="cell_hd"><span class="fs28 color_3 fw_b">报单金额</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b color_3" id="order_amount" placeholder="请输入报单金额">
+            </div>
+        </div>
+    </div>
+    <div class="page-ftb">
+        <span class="fs32 color_w fw_b BGcolor_r editpwd">确定报单</span>
+    </div>
+</div>
+
+
+{/block}
+
+{block name="footer"}
+<script type="text/javascript">
+	$('.editpwd').on('click',function(){
+        var arr = new Object();
+      	arr.member_id = $('#member_id').val();
+        arr.order_amount = $('#order_amount').val();
+        if (arr.member_id == '' ){
+            _alert('请输入推荐人ID.');
+            return false;
+        }
+		if (arr.order_amount == '' ){
+            _alert('请输入报单金额.');
+            return false;
+        }
+        jq_ajax('{:url("member/api.users/addMemberOrder")}',arr,function (res) {
+            if (res.code == 0) {
+                _alert(res.msg);
+                return false;
+            }
+            _alert(res.msg,'{:url("member/center/index")}');
+        })
+    })
+</script>
+
+{/block}

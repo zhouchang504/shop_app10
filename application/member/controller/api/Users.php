@@ -4,6 +4,7 @@ namespace app\member\controller\api;
 
 use app\ApiController;
 use app\member\model\MemberModel;
+use app\member\model\MemberOrderModel;
 use app\member\model\UsersModel;
 use app\member\model\UsersSignModel;
 use app\member\model\WithdrawModel;
@@ -763,7 +764,7 @@ class Users extends ApiController
         return $this->success('请求成功.','',$res);
     }
     /*------------------------------------------------------ */
-    //-- 分享海报二维码
+    //-- 录入会员信息
     /*------------------------------------------------------ */
     function addMember(){
         $input = input();
@@ -776,6 +777,8 @@ class Users extends ApiController
         if (empty($input['banknumber']))  return $this->error('请输入银行卡号.');
         if (empty($input['bankaddress']))  return $this->error('请输入开户行地址.');
         if (empty($input['address']))  return $this->error('请输入住址.');
+        if (!is_numeric($input['pid']))  return $this->error('推荐人ID必须是数字.');
+        if (!is_numeric($input['spid']))  return $this->error('服务上级ID必须是数字.');
         $insertData = $input;
         $insertData['user_id'] = $this->userInfo['user_id'];
         $insertData['regtime'] = time();
@@ -785,6 +788,29 @@ class Users extends ApiController
             $this->success('录入会员信息成功.');
         }else{
             $this->error('录入会员信息失败.');
+        }
+    }
+    /*------------------------------------------------------ */
+    //-- 新增报单
+    /*------------------------------------------------------ */
+    function addMemberOrder(){
+        $input = input();
+        if (empty($input['member_id']))  return $this->error('请输入推荐人ID.');
+        if (empty($input['order_amount']))  return $this->error('请输入报单金额.');
+        if (!is_numeric($input['member_id']))  return $this->error('推荐人ID必须是数字.');
+        if (!is_numeric($input['order_amount']))  return $this->error('报单金额必须是数字.');
+        $MemberModel = new MemberModel();
+        $MemberInfo = $MemberModel->where('member_id',$input['member_id'])->where('user_id',$this->userInfo['user_id'])->find();
+        if(!$MemberInfo)return $this->error('ID' . $input['member_id'] . ' 不是您的会员.');
+        $insertData = $input;
+        $insertData['user_id'] = $this->userInfo['user_id'];
+        $insertData['createtime'] = time();
+        $MemberOrderModel = new MemberOrderModel();
+        $res = $MemberOrderModel->create($insertData);
+        if($res){
+            $this->success('报单成功.');
+        }else{
+            $this->error('报单失败.');
         }
     }
 }
