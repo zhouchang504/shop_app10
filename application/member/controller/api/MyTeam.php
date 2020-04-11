@@ -4,7 +4,9 @@ namespace app\member\controller\api;
 
 use app\ApiController;
 
+use app\member\model\MemberModel;
 use app\member\model\UsersModel;
+use app\member\model\MemberBindModel;
 use app\member\model\UsersBindModel;
 use app\distribution\model\DividendRoleModel;
 
@@ -21,11 +23,28 @@ class MyTeam extends ApiController
     {
         parent::initialize();
 		$this->checkLogin();//验证登陆
-        $this->Model = new UsersBindModel();
+        $this->Model = new MemberBindModel();
+    }
+    /*------------------------------------------------------ */
+    //-- 获取列表
+    /*------------------------------------------------------ */
+     public function getList(){
+        $where = ['user_id = ' . $this->userInfo['user_id']];
+        $user_id = input('user_id','','trim');
+        if (empty($user_id) == false) {
+            $where = ['member_id = ' . $user_id . ' or tel = ' . $user_id . ' or idcard = ' . $user_id];
+        }
+        $MemberModel = new MemberModel();
+        $this->sqlOrder = 'member_id DESC';
+        $data = $this->getPageList($MemberModel, join(' AND ', $where),'*',10);
+        $return['list'] = $data['list'];
+        $return['page_count'] = $data['page_count'];
+        $return['code'] = 1;
+        return $this->ajaxReturn($return);
     }
     /*------------------------------------------------------ */
 	//-- 获取列表
-	/*------------------------------------------------------ */
+	/*------------------------------------------------------
  	public function getList(){
         $where[] = ['pid','=',$this->userInfo['user_id']];
 		$level = input('level',0,'intval');
@@ -71,4 +90,5 @@ class MyTeam extends ApiController
 		$return['code'] = 1;
 		return $this->ajaxReturn($return);
 	}
+	*/
 }

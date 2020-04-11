@@ -103,4 +103,11 @@ class Center  extends ClientbaseController{
         $this->assign('title', '添加银行卡');
         return $this->fetch('add_bank_card');
     }
+    /*------------------------------------------------------ */
+    //-- 添加虚拟会员
+    /*------------------------------------------------------ */
+    public function addMember(){
+        $this->assign('title', '添加银行卡');
+        return $this->fetch('add_member');
+    }
 }?>

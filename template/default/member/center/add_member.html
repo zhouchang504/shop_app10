@@ -1,0 +1,131 @@
+{extend name="layouts@base" /}
+{block name="head"}
+<link rel="stylesheet" href="__STATIC__/mobile/default/css/userData.css" />
+{/block}
+{block name="main" }
+<div class="page-bd userData">
+    <!-- 页面内容-->
+    <div class="cells">
+   
+        <div class="cell">
+        	<div class="cell_hd"><span class="fs28 color_3 fw_b">推荐人ID</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b color_3" id="pid" placeholder="请输入推荐人ID">
+            </div>
+        </div>
+        <div class="cell">
+        	<div class="cell_hd"><span class="fs28 color_3 fw_b">服务上级ID</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b color_3" id="spid" placeholder="请输入服务上级ID">
+            </div>
+        </div>
+        <div class="cell">
+        	<div class="cell_hd"><span class="fs28 color_3 fw_b">用户名</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="username" placeholder="请输入用户名">
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">性别</span></div>
+            <div class="cell_bd">
+                <select class="fs28" id="sex">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">身份证号</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="idcard" placeholder="请输入身份证号">
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">手机号码</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="tel" placeholder="请输入手机号码">
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">银行卡号</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="banknumber" placeholder="请输入银行卡号">
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">开户行地址</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="bankaddress" placeholder="请输入开户行地址">
+            </div>
+        </div>
+        <div class="cell">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">住址</span></div>
+            <div class="cell_bd">
+                <input type="text" class="fs28 fw_b  color_3" id="address" placeholder="请输入住址">
+            </div>
+        </div>
+    </div>
+    <div class="page-ftb">
+        <span class="fs32 color_w fw_b BGcolor_r editpwd">录入新会员</span>
+    </div>
+</div>
+
+
+{/block}
+
+{block name="footer"}
+<script type="text/javascript">
+	$('.editpwd').on('click',function(){
+        var arr = new Object();
+      	arr.pid = $('#pid').val();
+        arr.spid = $('#spid').val();
+		arr.username = $('#username').val();
+        arr.sex = $('#sex').val();
+        arr.idcard = $('#idcard').val();
+        arr.tel = $('#tel').val();
+        arr.banknumber = $('#banknumber').val();
+        arr.bankaddress = $('#bankaddress').val();
+        arr.address = $('#address').val();
+        if (arr.pid == '' ){
+            _alert('请输入推荐人ID.');
+            return false;
+        }
+		if (arr.spid == '' ){
+            _alert('请输入服务上级ID.');
+            return false;
+        }
+        if (arr.username == '' ){
+            _alert('请输入用户名.');
+            return false;
+        }
+        if (arr.idcard == '' ){
+            _alert('请输入身份证号.');
+            return false;
+        }
+        if (arr.tel == '' ){
+            _alert('请输入手机号码.');
+            return false;
+        }
+        if (arr.banknumber == '' ){
+            _alert('请输入银行卡号.');
+            return false;
+        }
+        if (arr.bankaddress == '' ){
+            _alert('请输入开户行地址.');
+            return false;
+        }
+        if (arr.address == '' ){
+            _alert('请输入住址.');
+            return false;
+        }
+        jq_ajax('{:url("member/api.users/addMember")}',arr,function (res) {
+            if (res.code == 0) {
+                _alert(res.msg);
+                return false;
+            }
+            _alert(res.msg,'{:url("member/center/index")}');
+        })
+    })
+</script>
+
+{/block}

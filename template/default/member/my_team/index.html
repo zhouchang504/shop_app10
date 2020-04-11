@@ -6,14 +6,8 @@
 <div class="page-bd">
     <!-- 页面内容-->
     <div class="top">
-        <div class="inputBox"><img src="__STATIC__/mobile/default/images/selech01.png" alt=""><input class="fs30 color_3" type="text" placeholder="请输入ID/昵称"></div>
+        <div class="inputBox"><img src="__STATIC__/mobile/default/images/selech01.png" alt=""><input class="fs30 color_3" type="text" placeholder="请输入ID/手机号/身份证"></div>
         <span class="fs30 color_3 close">取消</span>
-    </div>
-    <div class="tab">
-        <div class="color_9 tab_all" data-type='all'><p class="fs32 tabActive" >全部</p><span class="fs22 num_all">0人</span></div>
-        <div class="color_9" data-type='1'><p class="fs32 ">本店</p><span class="fs22 num_1">0人</span></div>
-        <div class="color_9" data-type='2'><p class="fs32">分店</p><span class="fs22 num_2">0人</span></div>
-        <div class="color_9" data-type='3'><p class="fs32">加盟店</p><span class="fs22 num_3">0人</span></div>
     </div>
     <div class="tabBox">
         <div class="block allBox"></div>
@@ -27,16 +21,11 @@
 <div class="cellBox">
 	<div class="cell">
 		<a href="#" class="left">
-			<img src="{{item.headimgurl?item.headimgurl:'__STATIC__/mobile/default/images/defheadimg.jpg'}}" alt="">
+			<img src="__STATIC__/mobile/default/images/defheadimg.jpg" alt="">
 			<div class="info">
-				<div class="userName"><p class="fs28 fw_b color_3">{{item.nick_name}}</p>
-				{literal}
-				{{if item.role_id > 0}}
-				<span class="fs22 color_w BGcolor_r fw_b">{{item.role_name}}</span>
-				{{/if}}
-				{/literal}
+				<div class="userName"><p class="fs28 fw_b color_3">{{item.username}}</p>
 				</div>
-				<div class="fs26 color_3 userId">ID{{item.user_id}}</div>
+				<div class="fs26 color_3 userId">ID {{item.member_id}}</div>
 			</div>
 		</a>
 		<div class="right">
@@ -44,7 +33,21 @@
 		</div>
 	</div>
 	<div class="moneyInfo fs26 color_9">
-		<div><span>我的佣金:{{item.account.total_dividend}}</span><p>我的积分:{{item.account.total_integral}}</p></div>
+		<div><span>电话号码：{{item.tel}}</span>
+		<span>性别：
+		{literal}
+		{{if item.sex > 0}}
+		男
+		{{else /}}
+		女
+		{{/if}}
+		{/literal}
+		</span></div>
+		<div><span>推荐上级：{{item.pid}}</span><span>服务上级：{{item.spid}}</span></div>
+		<div>身份证：{{item.idcard}}</div>
+		<div>银行卡号：{{item.banknumber}}</div>
+		<div>开户行地址：{{item.bankaddress}}</div>
+		<div>住址：{{item.address}}</div>
 	</div>
 </div>
 {{/each}}
@@ -91,13 +94,6 @@ function getList(isagain) {
 				$('.'+_type+'Box').find('.get_list_tip').html('加载失败，点击重新加载.');
 				return false;
 			}
-			if (is_stat == 1){
-				is_stat = 0;				
-				$('.num_all').html('('+res.stat.all+')');
-				$('.num_1').html('('+res.stat[1]+')');
-				$('.num_2').html('('+res.stat[2]+')');
-				$('.num_3').html('('+res.stat[3]+')');
-			}					
 			nowPage[_type] = page+1;
 			$('.'+_type+'Box').find('.get_list_tip').remove();
 			 $('.'+_type+'Box').append(template('listTpl',res));

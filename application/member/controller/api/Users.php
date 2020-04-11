@@ -3,6 +3,7 @@
 namespace app\member\controller\api;
 
 use app\ApiController;
+use app\member\model\MemberModel;
 use app\member\model\UsersModel;
 use app\member\model\UsersSignModel;
 use app\member\model\WithdrawModel;
@@ -760,5 +761,30 @@ class Users extends ApiController
         $data['share_qrcode_width'] = settings('share_qrcode_width');
         $res['img'] = $MergeImg->shareImg($data,-1);
         return $this->success('请求成功.','',$res);
+    }
+    /*------------------------------------------------------ */
+    //-- 分享海报二维码
+    /*------------------------------------------------------ */
+    function addMember(){
+        $input = input();
+        if (empty($input['pid']))  return $this->error('请输入推荐人ID.');
+        if (empty($input['spid']))  return $this->error('请输入服务上级ID.');
+        if (empty($input['username']))  return $this->error('请输入用户名.');
+        if (empty($input['sex']))  return $this->error('请选择性别.');
+        if (empty($input['idcard']))  return $this->error('请输入身份证号.');
+        if (empty($input['tel']))  return $this->error('请输入手机号码.');
+        if (empty($input['banknumber']))  return $this->error('请输入银行卡号.');
+        if (empty($input['bankaddress']))  return $this->error('请输入开户行地址.');
+        if (empty($input['address']))  return $this->error('请输入住址.');
+        $insertData = $input;
+        $insertData['user_id'] = $this->userInfo['user_id'];
+        $insertData['regtime'] = time();
+        $MemberModel = new MemberModel();
+        $res = $MemberModel->create($insertData);
+        if($res){
+            $this->success('录入会员信息成功.');
+        }else{
+            $this->error('录入会员信息失败.');
+        }
     }
 }

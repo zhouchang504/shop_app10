@@ -332,13 +332,6 @@ class Flow extends ApiController
             }
         }
 
-        if($buying_pro_num > 1){
-            $this->error('身份商品只能购买单个.');
-        }
-        if($buyed_pro_num > 0 && $buying_pro_num > 0){
-            return $this->error('您已购买过身份商品，请勿重复下单.');
-        }
-
         if (empty($supplyer_ids) == false){
             $supplyer_ids = array_keys($supplyer_ids);
             if (count($supplyer_ids) > 1){
