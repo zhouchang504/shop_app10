@@ -15,7 +15,7 @@
         <div class="cell">
         	<div class="cell_hd"><span class="fs28 color_3 fw_b">报单金额</span></div>
             <div class="cell_bd">
-                <input type="text" class="fs28 fw_b color_3" id="order_amount" placeholder="请输入报单金额">
+                <input type="text" class="fs28 fw_b color_3" id="order_amount" placeholder="请输入报单金额">(剩余PV{$pv})
             </div>
         </div>
     </div>
@@ -39,6 +39,14 @@
         }
 		if (arr.order_amount == '' ){
             _alert('请输入报单金额.');
+            return false;
+        }
+        if (arr.order_amount <= 0 ){
+            _alert('报单金额必须大于0.');
+            return false;
+        }
+        if (arr.order_amount > {$pv} ){
+            _alert('报单金额不能超过剩余PV.');
             return false;
         }
         jq_ajax('{:url("member/api.users/addMemberOrder")}',arr,function (res) {

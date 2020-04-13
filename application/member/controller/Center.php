@@ -116,6 +116,7 @@ class Center  extends ClientbaseController{
     public function addMemberOrder(){
         $this->assign('title', '会员报单');
         $this->assign('member_id', input('member_id'));
+        $this->assign('pv', $this->userInfo['account']['use_integral']);
         return $this->fetch('add_member_order');
     }
 }?>

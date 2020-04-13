@@ -36,7 +36,7 @@ class Wallet  extends ClientbaseController{
         $type = input('type','balance','trim');
         $title = '';
         $title = $type == 'balance' ? '余额明细' : $title;
-        $title = $type == 'score' ? '积分明细' : $title;
+        $title = $type == 'score' ? 'PV明细' : $title;
         $this->assign('title', $title);
         $this->assign('type', $type);
         return $this->fetch('mylog');

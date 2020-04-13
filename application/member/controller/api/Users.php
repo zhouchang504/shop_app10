@@ -799,18 +799,32 @@ class Users extends ApiController
         if (empty($input['order_amount']))  return $this->error('请输入报单金额.');
         if (!is_numeric($input['member_id']))  return $this->error('推荐人ID必须是数字.');
         if (!is_numeric($input['order_amount']))  return $this->error('报单金额必须是数字.');
+        if ($input['order_amount'] <= 0)  return $this->error('报单金额必须大于0.');
+        if ($input['order_amount'] > $this->userInfo['account']['use_integral'])  return $this->error('报单金额不能超过剩余PV.');
         $MemberModel = new MemberModel();
         $MemberInfo = $MemberModel->where('member_id',$input['member_id'])->where('user_id',$this->userInfo['user_id'])->find();
         if(!$MemberInfo)return $this->error('ID' . $input['member_id'] . ' 不是您的会员.');
         $insertData = $input;
         $insertData['user_id'] = $this->userInfo['user_id'];
         $insertData['createtime'] = time();
+        $AccountLogModel = new AccountLogModel();
+        $changedata = array();
+        $changedata['change_desc'] = '报单';
+        $changedata['change_type'] = 11;
+        $changedata['use_integral'] = $input['order_amount'] * -1;
         $MemberOrderModel = new MemberOrderModel();
+        Db::startTrans();
+        $change_res = $AccountLogModel->change($changedata, $this->userInfo['user_id']);
         $res = $MemberOrderModel->create($insertData);
-        if($res){
-            $this->success('报单成功.');
+        if(!$change_res) {
+            Db::rollback();// 回滚事务
+            $this->error('扣除PV错误,报单失败.');
+        }else if(!$res){
+            Db::rollback();// 回滚事务
+            $this->error('添加报单记录错误,报单失败.');
         }else{
-            $this->error('报单失败.');
+            Db::commit();// 提交事务
+            $this->success('报单成功.');
         }
     }
 }
