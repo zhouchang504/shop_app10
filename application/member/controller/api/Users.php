@@ -827,4 +827,48 @@ class Users extends ApiController
             $this->success('报单成功.');
         }
     }
+    /*------------------------------------------------------ */
+    //-- 获取会员佣金日志
+    /*------------------------------------------------------ */
+    public function getMemberOrderLog()
+    {
+        $type = input('type', 'success_member_order', 'trim');
+        $time = input('time', '', 'trim');
+        if (empty($time)) {
+            $time = date('Y年m月');
+        }
+        $return['time'] = $time;
+        $_time = strtotime(str_replace(array('年', '月'), array('-', ''), $time));
+        $return['code'] = 1;
+        $MemberOrderModel = new MemberOrderModel();
+        $where[] = ['user_id', '=', $this->userInfo['user_id']];
+        $where[] = ['createtime', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
+        switch ($type) {
+            case 'all_member_order'://所有明细
+                break;
+            case 'success_member_order'://成功明细
+                $where[] = ['status', '=', 1];
+                break;
+            case 'error_member_order'://失败明细
+                $where[] = ['status', '=', 2];
+                break;
+            default:
+                return $this->error('类型错误.');
+                break;
+        }
+        $return['income'] = 0;
+        $rows = $MemberOrderModel->where($where)->order('createtime DESC')->select();
+
+        $lang = ['','成功','失败'];
+        foreach ($rows as $key => $row) {
+            $income = $row['order_amount'];
+            $return['income'] += $income;
+            $row['_time'] = timeTran($row['createtime']);
+            $row['value'] = $income;
+            $row['status'] = $lang[$row['status']];
+            $return['list'][] = $row;
+        }
+        $return['income'] = round($return['income'],2);
+        return $this->ajaxReturn($return);
+    }
 }

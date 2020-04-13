@@ -119,4 +119,11 @@ class Center  extends ClientbaseController{
         $this->assign('pv', $this->userInfo['account']['use_integral']);
         return $this->fetch('add_member_order');
     }
+    /*------------------------------------------------------ */
+    //-- 报单明细
+    /*------------------------------------------------------ */
+    public function memberOrderLog(){
+        $this->assign('title', '报单明细');
+        return $this->fetch('member_order_log');
+    }
 }?>
