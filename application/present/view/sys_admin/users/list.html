@@ -1,0 +1,38 @@
+<table class="table table-bordered  ">
+<thead class="flip-content bordered-palegreen">
+<tr>
+    <th width="60">ID</th>
+    <th width="140">昵称</th>
+    <th width="100">手机号</th>
+    <th width="80">会员等级</th>
+    <th width="100">推荐上级</th>
+    <th width="100">服务上级</th>
+    <th width="120">所属专卖店</th>
+    <th width="140">注册时间</th>
+    <th width="80">操作</th>
+</tr>
+</thead>
+<tbody>
+{volist name="data.list" id="vo" }
+<tr>
+    <td>{$vo.member_id}</td>
+    <td>{$vo.username}</td>
+    <td>{$vo.tel}</td>
+    <td>{$roleList[$vo['role_id']]['role_name']}</td>
+    <td>{$vo.pid}</td>
+    <td>{$vo.spid}</td>
+    <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
+    <td >{$vo.regtime|dateTpl}</td>
+    <td >
+        <a href="{:url('info',array('member_id'=>$vo['member_id']))}" title="编辑" class="fa fa-edit m-xs" ></a>
+        <a href="{:url('/shop/sys_admin.order/index',array('favour_id'=>$vo['member_id']))}" class="m-xs" title="查看订单"><i class="fa fa-search text-muted"></i></a>
+    </td>
+</tr>
+{/volist}
+</tbody>
+</table>
+{empty name="data.list"}
+<table width="100%" >
+ 	<tr><td height="300" colspan="8" align="center" valign="middle" >没有相关数据！</td></tr>
+</table>
+{/empty}  

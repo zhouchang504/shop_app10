@@ -1,0 +1,121 @@
+{extend name="mainadmin@layouts/base" /}
+{block name="head" }
+<link href="__STATIC__/main/css/stylesheets/uploadify/uploadify.min.css" rel="stylesheet"/>
+<link href="__STATIC__/main/css/stylesheets/page/goods.css?v=1" rel="stylesheet"/>
+{/block}
+{block name="main" }
+
+<header>
+    <div class="page-breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="fa fa-ellipsis-v"></i>
+                <strong>{$row['fa_id']>0?"编辑优惠活动":"添加优惠活动"}</strong>
+            </li>
+        </ul>
+        <a class="pull-right pointer p-r" data-toggle="back" title="返回"><i class="fa fa-reply"></i></a>
+    </div>
+</header>
+
+<section class="scrollable wrapper">
+    <form class="form-horizontal form-validate" method="post" action="{:url('info')}">
+        <section class="panel panel-default">
+            <div class="form-group" style="margin-top: 22px;">
+                <label class="control-label">ID：</label>
+                <div class="col-sm-3"><label>{$row.member_id}</label></div>
+                <label class="control-label">注册手机：</label>
+                <div class="col-sm-3">
+                    <label>
+                        <input id="tel" name="tel" type="text" value="{$row.tel}">
+                    </label>
+                </div>                
+            </div>
+            <div class="form-group">
+                
+                <label class="control-label">昵称：</label>
+                <div class="col-sm-3">
+                    <label><input id="username" name="username" type="text" value="{$row.username}"></label>
+                </div>
+                <label class="control-label">等级：</label>
+                <div class="col-sm-3">
+                    <label>
+                        <select name="role_id" style="width: 164px;" data-toggle="select2">
+                            <option value="">选择等级</option>
+                            {volist name="roleList" id="vo" }
+                            <option value="{$vo.role_id}" {$row['role_id']==$vo['role_id']?'selected':''}>{$vo.role_name}</option>
+                            {/volist}
+                        </select>
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">所属专卖店：</label>
+                <div class="col-sm-6">
+                    <label><input  id="user_id" name="user_id" type="text" value="{$row.user_id}"> {if $row.member_id}{$row.user_id|userInfo}{/if}</label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">推荐上级：</label>
+                <div class="col-sm-3">
+                    <label><input id="pid" name="pid" type="text" value="{$row.pid}"></label>
+                </div>
+                <label class="control-label">服务上级：</label>
+                <div class="col-sm-3">
+                    <label><input id="spid" name="spid" type="text" value="{$row.spid}"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">性别：</label>
+                <div class="col-sm-3">
+                    <label class="radio-inline">
+                        <input name="sex" value="0" class="js_undertake" type="radio" {$row['sex']|tplckval='=0','checked',true}>女
+                    </label>
+                    <label class="radio-inline">
+                        <input name="sex" value="1" class="js_undertake" type="radio" {$row['sex']|tplckval='=1','checked'}>男
+                    </label>
+                </div>
+                <label class="control-label">住址：</label>
+                <div class="col-sm-3">
+                    <label><input id="address" name="address" type="text" value="{$row.address}"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">身份证号：</label>
+                <div class="col-sm-3">
+                    <label>
+                        <input id="idcard" name="idcard" type="text" value="{$row.idcard}">
+                    </label>
+                </div>
+                <label class="control-label">银行卡号：</label>
+                <div class="col-sm-3">
+                    <label><input id="banknumber" name="banknumber" type="text" value="{$row.banknumber}"></label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">开户行地址：</label>
+                <div class="col-sm-3">
+                    <label>
+                        <input id="bankaddress" name="bankaddress" type="text" value="{$row.bankaddress}">
+                    </label>
+                </div>
+                <label class="control-label">注册时间：</label>
+                <div class="col-sm-3">
+                    <label>{$row.regtime|dateTpl}</label>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg m-l" style="width:96%;"></div>
+            <div class="form-group" style="width:90%;">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <button type="submit" class="btn btn-primary js_save_submit" data-loading-text="保存中...">保存
+                    </button>
+                    <button type="button" class="btn btn-default" data-toggle="back">取消</button>
+                </div>
+            </div>
+        </section>
+        <input name="member_id" id="member_id" type="hidden" value="{$row.member_id|intval}">
+    </form>
+</section>
+{/block}
+{block name="footer" }
+<script type="text/javascript"></script>
+{/block}
