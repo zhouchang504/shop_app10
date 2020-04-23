@@ -63,7 +63,7 @@ class MemberModel extends BaseModel
     /*------------------------------------------------------ */
     function reward()
     {
-        $theday = 10;//结算日(每月10号)
+        $theday = settings('reward_day');//结算日(每月10号)
         $thismonth = date('m');
         $thisyear = date('Y');
         if ($thismonth == 1) {
