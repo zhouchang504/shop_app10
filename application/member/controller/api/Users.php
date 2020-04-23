@@ -768,10 +768,10 @@ class Users extends ApiController
     /*------------------------------------------------------ */
     function addMember(){
         $input = input();
-        if (empty($input['pid']))  return $this->error('请输入推荐人ID.');
-        if (empty($input['spid']))  return $this->error('请输入服务上级ID.');
+        $input['pid'] = $input['pid'] ? $input['pid'] : 0;
+        $input['spid'] = $input['spid'] ? $input['spid'] : 0;
         if (empty($input['username']))  return $this->error('请输入用户名.');
-        if (empty($input['sex']))  return $this->error('请选择性别.');
+        $input['sex'] = $input['sex'] ? 1 : 0;
         if (empty($input['idcard']))  return $this->error('请输入身份证号.');
         if (empty($input['tel']))  return $this->error('请输入手机号码.');
         if (empty($input['banknumber']))  return $this->error('请输入银行卡号.');

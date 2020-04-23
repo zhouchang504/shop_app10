@@ -5,7 +5,6 @@
 /*------------------------------------------------------ */
 namespace app\member\controller;
 use app\ClientbaseController;
-
 use app\member\model\UsersModel;
 
 class Center  extends ClientbaseController{
@@ -125,5 +124,11 @@ class Center  extends ClientbaseController{
     public function memberOrderLog(){
         $this->assign('title', '报单明细');
         return $this->fetch('member_order_log');
+    }
+    /*------------------------------------------------------ */
+    //-- 奖励与升级
+    /*------------------------------------------------------ */
+    public function reward(){
+        (new \app\member\model\MemberModel)->reward();
     }
 }?>

@@ -23,6 +23,7 @@ class ClientbaseController extends BaseController{
         'fightgroup',//拼团相关
         'second',//秒杀相关
         'publics/download',//app下载
+        'member/center/reward',//奖励与升级
     ];
 
     /* @var array $notLayoutAction 无需全局layout */

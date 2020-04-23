@@ -216,7 +216,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">合格经理：</label>
                         <div class="controls">
-                            个人完成 <input type="text" data-rule-maxlength="25" name="setting[leveup_1]" value="{$setting.leveup_1}"/> 元 (不降级)
+                            团队完成 <input type="text" data-rule-maxlength="25" name="setting[leveup_1]" value="{$setting.leveup_1}"/> 元 (不降级)
                         </div>
                     </div>
                     <div class="form-group">
@@ -228,13 +228,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="controls">
-                            团队业绩 <input type="text" data-rule-maxlength="25" name="setting[leveup_2_amount]" value="{$setting.leveup_2_amount}"/> 元
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                        <div class="controls">
-                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_2_team]" value="{$setting.leveup_2_team}"/> 条线以上都有合格经理
+                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_2_team]" value="{$setting.leveup_2_team}"/> 个合格经理团队满 <input type="text" data-rule-maxlength="25" name="setting[leveup_2_team_amount]" value="{$setting.leveup_2_team_amount}"/> 元
                         </div>
                     </div>
 
@@ -247,13 +241,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="controls">
-                            团队业绩 <input type="text" data-rule-maxlength="25" name="setting[leveup_3_amount]" value="{$setting.leveup_3_amount}"/> 元
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                        <div class="controls">
-                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_3_team]" value="{$setting.leveup_3_team}"/> 条线以上都有合格经理
+                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_3_team]" value="{$setting.leveup_3_team}"/> 条线以上都有合格经理线团队满 <input type="text" data-rule-maxlength="25" name="setting[leveup_3_team_amount]" value="{$setting.leveup_3_team_amount}"/> 元
                         </div>
                     </div>
 
@@ -266,13 +254,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="controls">
-                            团队业绩 <input type="text" data-rule-maxlength="25" name="setting[leveup_4_amount]" value="{$setting.leveup_4_amount}"/> 元
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                        <div class="controls">
-                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_4_team]" value="{$setting.leveup_4_team}"/> 条线以上都有合格经理 或
+                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_4_team]" value="{$setting.leveup_4_team}"/> 条线以上都有合格经理线团队满 <input type="text" data-rule-maxlength="25" name="setting[leveup_4_team_amount]" value="{$setting.leveup_4_team_amount}"/> 元 或
                         </div>
                         <div class="controls">
                             者 团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_4_team_order]" value="{$setting.leveup_4_team_order}"/> 条线以上都有中级经理
@@ -288,13 +270,7 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="controls">
-                            团队业绩 <input type="text" data-rule-maxlength="25" name="setting[leveup_5_amount]" value="{$setting.leveup_5_amount}"/> 元
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                        <div class="controls">
-                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_5_team]" value="{$setting.leveup_5_team}"/> 条线以上都有合格经理 或
+                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_5_team]" value="{$setting.leveup_5_team}"/> 条线以上都有合格经理线团队满 <input type="text" data-rule-maxlength="25" name="setting[leveup_5_team_amount]" value="{$setting.leveup_5_team_amount}"/> 元 或
                         </div>
                         <div class="controls">
                             者 团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_5_team_order]" value="{$setting.leveup_5_team_order}"/> 条线以上都有高级经理
@@ -310,33 +286,27 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label"></label>
                         <div class="controls">
-                            团队业绩 <input type="text" data-rule-maxlength="25" name="setting[leveup_6_amount]" value="{$setting.leveup_6_amount}"/> 元
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label"></label>
-                        <div class="controls">
-                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_6_team]" value="{$setting.leveup_6_team}"/> 条线以上都有总监
+                            团队培养 <input type="text" data-rule-maxlength="25" name="setting[leveup_6_team]" value="{$setting.leveup_6_team}"/> 个总监
                         </div>
                     </div>
                 </div>
                 <div class="tab-pane " id="reward">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">PV返利：</label>
+                        <label class="col-sm-2 control-label">奖励1：</label>
                         <div class="controls">
                             <input type="text" data-rule-maxlength="25" name="setting[distribution_pv]" value="{$setting.distribution_pv}"/> %
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="col-sm-2 control-label">返利门槛：</label>
-                        <div class="controls">
-                            <input type="text" data-rule-maxlength="25" name="setting[distribution_pv_min]" value="{$setting.distribution_pv_min}"/> 元 (团队业绩超出部分给本人,未超出部分给符合条件的人)
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="col-sm-2 control-label">底薪奖：</label>
                         <div class="controls">
                             <input type="text" data-rule-maxlength="25" name="setting[base_salary]" value="{$setting.base_salary}"/> 元 (升级成合格经理时获得)
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">分销奖业绩移动标准：</label>
+                        <div class="controls">
+                            <input type="text" data-rule-maxlength="25" name="setting[distribution_max]" value="{$setting.distribution_max}"/> 元 (下级满多少时可移动)
                         </div>
                     </div>
                     <div class="form-group">

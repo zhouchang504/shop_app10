@@ -5,10 +5,6 @@ namespace app\member\controller\api;
 use app\ApiController;
 
 use app\member\model\MemberModel;
-use app\member\model\UsersModel;
-use app\member\model\MemberBindModel;
-use app\member\model\UsersBindModel;
-use app\distribution\model\DividendRoleModel;
 
 /*------------------------------------------------------ */
 //-- 我的团队相关API
@@ -23,7 +19,7 @@ class MyTeam extends ApiController
     {
         parent::initialize();
 		$this->checkLogin();//验证登陆
-        $this->Model = new MemberBindModel();
+        $this->Model = new MemberModel();
     }
     /*------------------------------------------------------ */
     //-- 获取列表
@@ -34,9 +30,8 @@ class MyTeam extends ApiController
         if (empty($user_id) == false) {
             $where = ['member_id = ' . $user_id . ' or tel = ' . $user_id . ' or idcard = ' . $user_id];
         }
-        $MemberModel = new MemberModel();
         $this->sqlOrder = 'member_id DESC';
-        $data = $this->getPageList($MemberModel, join(' AND ', $where),'*',10);
+        $data = $this->getPageList($this->Model, join(' AND ', $where),'*',10);
         $return['list'] = $data['list'];
         $return['page_count'] = $data['page_count'];
         $return['code'] = 1;
