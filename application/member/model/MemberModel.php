@@ -15,6 +15,7 @@ class MemberModel extends BaseModel
     protected $mkey = 'member_info_mkey_';
     public  $pk = 'member_id';
     protected $MemberOrderModel;//报单模型
+    protected $MemberAccountLogModel;//日志模型
 
     protected $orderAmoutArr;     //团队实时业绩(计算奖励1)
     protected $orderMaxAmoutArr;  //团队实时业绩(最多时)
@@ -30,6 +31,7 @@ class MemberModel extends BaseModel
     /*------------------------------------------------------ */
     public function initialize(){
         $this->MemberOrderModel = new MemberOrderModel();
+        $this->MemberAccountLogModel = new MemberAccountLogModel();
         $this->orderAmoutArr = array();
         $this->memberLevelArr = array();
         $this->orderDisAmoutArr = array();
@@ -177,7 +179,7 @@ class MemberModel extends BaseModel
             $son_5 = $this->get_role_sonnum($key,5);//团队内总监数量
             //高级总监
             //个人完成200元,团队培养3个总监
-            if($this->orderOldAmoutArr[$key] >= $settings['leveup_6'] && $son_5 >= $settings['leveup_6_team'] || in_array($key,[1,3,10])){
+            if($this->orderOldAmoutArr[$key] >= $settings['leveup_6'] && $son_5 >= $settings['leveup_6_team']){
                 $this->memberLevelArr[$key] = 6;
                 continue;
             }
@@ -349,8 +351,15 @@ class MemberModel extends BaseModel
     {
         $distribution_pv = settings('distribution_pv');
         if($this->orderAmoutArr) foreach ($this->orderAmoutArr as $key=>$item) {
-            if($item)
-            echo "用户ID".$key."获得奖励1:".($item*$distribution_pv/100)."元<br>";
+            if($item){
+                $data = array();
+                $data['member_id'] = $key;
+                $data['balance_money'] = $item;
+                $data['change_type'] = 4;
+                $data['change_desc'] = "奖励1";
+                $this->MemberAccountLogModel->change($data);
+                echo "用户ID".$key."获得奖励1:".($item*$distribution_pv/100)."元<br>";
+            }
 
         }
     }
@@ -361,6 +370,12 @@ class MemberModel extends BaseModel
         $base_salary = settings('base_salary');
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
             if($value == 1 && $this->memberOldLevelArr['$key'] == 0){
+                $data = array();
+                $data['member_id'] = $key;
+                $data['balance_money'] = $base_salary;
+                $data['change_type'] = 3;
+                $data['change_desc'] = "底薪奖";
+                $this->MemberAccountLogModel->change($data);
                 echo "--用户ID".$key."获得底薪奖:".$base_salary."元<br>";
             }
         }
@@ -418,10 +433,23 @@ class MemberModel extends BaseModel
                         $disAmout += $this->orderDisAmoutArr[$son_item];
                     }
                     $disAmoutprice = $disAmout * $settings['distribution_'.$thisDisNum] / 100;
+                    $data = array();
+                    $data['member_id'] = $key;
+                    $data['balance_money'] = $disAmoutprice;
+                    $data['change_type'] = 5;
+                    $data['change_desc'] = $thisDisNum."层分销奖";
+                    $this->MemberAccountLogModel->change($data);
                     echo "-- --用户ID".$key."获得".$thisDisNum."层分销奖:".$disAmoutprice."元<br>";
                     //层级配对奖
                     if(!empty($pinfo)){
                         $paiAmoutprice = $disAmoutprice * $settings['pair_'.($this->memberLevelArr[$pinfo['member_id']] - 3)] / 100;
+                        $data = array();
+                        $data['member_id'] = $pinfo['member_id'];
+                        $data['balance_money'] = $paiAmoutprice;
+                        $data['change_type'] = 6;
+                        $data['change_desc'] = "用户".$key."的".$thisDisNum."层层级配对奖";
+                        $data['by_id'] = $thisDisNum;
+                        $this->MemberAccountLogModel->change($data);
                         echo "-- --用户ID".$pinfo['member_id']."获得用户".$key."的".$thisDisNum."层层级配对奖:".$paiAmoutprice."元<br>";
                     }
                 }
@@ -451,11 +479,31 @@ class MemberModel extends BaseModel
             echo "高级总监以上总业绩:".$dividendAmout_3." <br>";
             for($i=4;$i<=6;$i++){
                 if(!empty($this->updateMemberArr[$i]))foreach ($this->updateMemberArr[$i] as $mid){
+                    $data = array();
+                    $data['member_id'] = $mid;
+                    $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100);
+                    $data['change_type'] = 7;
+                    $data['change_desc'] = "加权分红(高级经理)";
+                    $this->MemberAccountLogModel->change($data);
                     echo "-- -- --用户ID".$mid."获得(高级经理)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100)."元<br>";
-                    if($i >= 5)
+                    if($i >= 5){
+                        $data = array();
+                        $data['member_id'] = $mid;
+                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100);
+                        $data['change_type'] = 7;
+                        $data['change_desc'] = "加权分红(总监)";
+                        $this->MemberAccountLogModel->change($data);
                         echo "-- -- --用户ID".$mid."获得(总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100)."元<br>";
-                    if($i >= 6)
+                    }
+                    if($i >= 6){
+                        $data = array();
+                        $data['member_id'] = $mid;
+                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100);
+                        $data['change_type'] = 7;
+                        $data['change_desc'] = "加权分红(高级总监)";
+                        $this->MemberAccountLogModel->change($data);
                         echo "-- -- --用户ID".$mid."获得(高级总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100)."元<br>";
+                    }
                 }
             }
         }
@@ -473,7 +521,14 @@ class MemberModel extends BaseModel
                 $member_info = $this->field('member_id,spid')->where('member_id', $member_info['spid'])->find();//查询服务上级
                 if($this->memberLevelArr[$member_info['member_id']] >= 6){
                     $same_num++;
-                    echo "-- -- -- --用户ID".$member_info['member_id']."获得用户" . $mid . "平级奖:".($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100)."元<br>";
+                    $data = array();
+                    $data['member_id'] = $member_info['member_id'];
+                    $data['balance_money'] = round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100);
+                    $data['change_type'] = 8;
+                    $data['change_desc'] = "用户".$mid."的".$same_num."层平级奖";
+                    $data['by_id'] = $mid;
+                    $this->MemberAccountLogModel->change($data);
+                    echo "-- -- -- --用户ID".$member_info['member_id']."获得用户".$mid."的".$same_num."层平级奖:".round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100)."元<br>";
                 }
             }while(!empty($member_info) && $same_num < 3);
         }
