@@ -4,9 +4,9 @@
 	<th width="90" class="th-sortable" data-sort-name="u.user_id">UID</th>
     <th width="120">注册手机</th>
     <th width="100">昵称</th>
-    <th width="120">推荐人</th>
-    <th width="150">等级/身份</th> 
-    <th width="100">帐户余额</th> 
+    <th width="150">身份</th>
+    <th width="100">余额</th>
+    <th width="100">积分(PV)</th>
     <th width="130">最近登陆</th>    
     <th width="160">操作</th>
 </tr>
@@ -18,16 +18,9 @@
 <td>{$vo.user_id}</td>
 <td>{$vo.mobile}</td>
 <td>{$vo.nick_name}</td>
-<td>{if condition = "$vo.pid > 0" }{$vo.pid} - {$vo.pid|userInfo}{else/}没有上级{/if}</td>
-<td>{$vo.total_integral|userLevel} / 
-{eq name="vo.role_id" value="0"}
-粉丝
-{else/}
-{$roleList[$vo['role_id']]['role_name']}
-{/eq}
-</td>
-
+<td>专卖店</td>
 <td>{$vo.balance_money}</td>
+<td>{$vo.use_integral}</td>
 <td>{$vo.login_time|dateTpl}</td>
 
 <td> 

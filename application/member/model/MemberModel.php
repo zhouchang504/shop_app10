@@ -253,7 +253,7 @@ class MemberModel extends BaseModel
                 }
                 if($this->updateMemberArr){
                     for($i=1;$i<=6;$i++){
-//                        if(!empty($this->updateMemberArr[$i]))$this->where('member_id','in',$this->updateMemberArr[$i])->update(['role_id'=>$i]);
+                        if(!empty($this->updateMemberArr[$i]))$this->where('member_id','in',$this->updateMemberArr[$i])->update(['role_id'=>$i]);
                     }
                 }
             }

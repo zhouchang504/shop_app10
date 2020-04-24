@@ -2,20 +2,31 @@
 <thead class="flip-content bordered-palegreen">
 <tr>
     <th width="60">ID</th>
+    <th width="120">报单金额</th>
+    <th width="100">状态</th>
+    <th width="140">报单时间</th>
+    <th width="140">失效时间</th>
     <th width="140">昵称</th>
     <th width="100">手机号</th>
     <th width="80">会员等级</th>
     <th width="100">推荐上级</th>
     <th width="100">服务上级</th>
     <th width="120">所属专卖店</th>
-    <th width="140">注册时间</th>
     <th width="80">操作</th>
 </tr>
 </thead>
 <tbody>
 {volist name="data.list" id="vo" }
 <tr>
-    <td>{$vo.member_id}</td>
+    <td>{$vo.order_id}</td>
+    <td>{$vo.order_amount}</td>
+    <td>{eq name="vo.status" value="1"}
+        正常
+        {else/}
+        失效
+        {/eq}</td>
+    <td>{$vo.createtime|dateTpl}</td>
+    <td>{$vo.invalidtime|dateTpl}</td>
     <td>{$vo.username}</td>
     <td>{$vo.tel}</td>
     <td>{eq name="vo.role_id" value="0"}
@@ -26,10 +37,8 @@
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>
     <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
-    <td >{$vo.regtime|dateTpl}</td>
     <td >
-        <a href="{:url('info',array('member_id'=>$vo['member_id']))}" title="编辑" class="fa fa-edit m-xs" ></a>
-        <!--<a href="{:url('/shop/sys_admin.order/index',array('favour_id'=>$vo['member_id']))}" class="m-xs" title="查看订单"><i class="fa fa-search text-muted"></i></a>-->
+        <a href="{:url('info',array('order_id'=>$vo['order_id']))}" title="编辑" class="fa fa-edit m-xs" ></a>
     </td>
 </tr>
 {/volist}
@@ -39,4 +48,4 @@
 <table width="100%" >
  	<tr><td height="300" colspan="8" align="center" valign="middle" >没有相关数据！</td></tr>
 </table>
-{/empty}  
+{/empty}

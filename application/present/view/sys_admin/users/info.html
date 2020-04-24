@@ -40,7 +40,7 @@
                 <div class="col-sm-3">
                     <label>
                         <select name="role_id" style="width: 164px;" data-toggle="select2">
-                            <option value="">选择等级</option>
+                            <option value="0">注册会员</option>
                             {volist name="roleList" id="vo" }
                             <option value="{$vo.role_id}" {$row['role_id']==$vo['role_id']?'selected':''}>{$vo.role_name}</option>
                             {/volist}

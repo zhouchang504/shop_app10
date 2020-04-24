@@ -1,0 +1,78 @@
+{extend name="mainadmin@layouts/base" /}
+{block name="head" }
+<link href="__STATIC__/main/css/stylesheets/uploadify/uploadify.min.css" rel="stylesheet"/>
+<link href="__STATIC__/main/css/stylesheets/page/goods.css?v=1" rel="stylesheet"/>
+{/block}
+{block name="main" }
+
+<header>
+    <div class="page-breadcrumbs">
+        <ul class="breadcrumb">
+            <li>
+                <i class="fa fa-ellipsis-v"></i>
+                <strong>{$row['fa_id']>0?"编辑优惠活动":"添加优惠活动"}</strong>
+            </li>
+        </ul>
+        <a class="pull-right pointer p-r" data-toggle="back" title="返回"><i class="fa fa-reply"></i></a>
+    </div>
+</header>
+
+<section class="scrollable wrapper">
+    <form class="form-horizontal form-validate" method="post" action="{:url('info')}">
+        <section class="panel panel-default">
+            <div class="form-group" style="margin-top: 22px;">
+                <label class="control-label">ID：</label>
+                <div class="col-sm-3"><label>{$row.order_id}</label></div>
+            </div>
+
+            <div class="form-group" style="margin-top: 22px;">
+                <label class="control-label">报单会员ID：</label>
+                <div class="col-sm-3"><label><input id="member_id" name="member_id" type="text" value="{$row.member_id}"></label></div>
+                <label class="control-label">报单金额：</label>
+                <div class="col-sm-3">
+                    <label>
+                        <input id="order_amount" name="order_amount" type="text" value="{$row.order_amount}">
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">所属专卖店：</label>
+                <div class="col-sm-3">
+                    <label><input  id="user_id" name="user_id" type="text" value="{$row.user_id}"> {if $row.member_id}{$row.user_id|userInfo}{/if}</label>
+                </div>
+                <label class="control-label">状态：</label>
+                <div class="col-sm-3">
+                    <label class="radio-inline">
+                        <input name="status" value="1" class="js_undertake" type="radio" {$row['status']|tplckval='=1','checked',true}>正常
+                    </label>
+                    <label class="radio-inline">
+                        <input name="status" value="2" class="js_undertake" type="radio" {$row['status']|tplckval='=2','checked'}>失效
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label">注册时间：</label>
+                <div class="col-sm-3">
+                    <label>{$row.createtime|dateTpl}</label>
+                </div>
+                <label class="control-label">失效时间：</label>
+                <div class="col-sm-3">
+                    <label>{$row.invalidtime|dateTpl}</label>
+                </div>
+            </div>
+            <div class="line line-dashed line-lg m-l" style="width:96%;"></div>
+            <div class="form-group" style="width:90%;">
+                <div class="col-sm-4 col-sm-offset-2">
+                    <button type="submit" class="btn btn-primary js_save_submit" data-loading-text="保存中...">保存
+                    </button>
+                    <button type="button" class="btn btn-default" data-toggle="back">取消</button>
+                </div>
+            </div>
+        </section>
+        <input name="order_id" id="order_id" type="hidden" value="{$row.order_id|intval}">
+    </form>
+</section>
+{/block}
+{block name="footer" }
+<script type="text/javascript"></script>
+{/block}
