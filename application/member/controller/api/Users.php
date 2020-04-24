@@ -3,6 +3,7 @@
 namespace app\member\controller\api;
 
 use app\ApiController;
+use app\member\model\MemberAccountLogModel;
 use app\member\model\MemberModel;
 use app\member\model\MemberOrderModel;
 use app\member\model\UsersModel;
@@ -869,6 +870,71 @@ class Users extends ApiController
             $return['list'][] = $row;
         }
         $return['income'] = round($return['income'],2);
+        return $this->ajaxReturn($return);
+    }
+    /*------------------------------------------------------ */
+    //-- 获取会员帐户变动日志
+    /*------------------------------------------------------ */
+    public function getMemberAccountLog()
+    {
+        $type = input('type', 'balance', 'trim');
+        $time = input('time', '', 'trim');
+        $member_id = input('member_id', '', 'trim');
+        if (empty($time)) {
+            $time = date('Y年m月');
+        }
+        $return['time'] = $time;
+        $_time = strtotime(str_replace(array('年', '月'), array('-', ''), $time));
+        $return['code'] = 1;
+        $AccountLogModel = new MemberAccountLogModel();
+        $where[] = ['m.user_id', '=', $this->userInfo['user_id']];
+        if($member_id)$where[] = ['a.member_id', '=', $member_id];
+        switch ($type) {
+            //底薪奖
+            case 'type3':
+                $where[] = ['change_type','=',3];
+                break;
+            //奖励1
+            case 'type4':
+                $where[] = ['change_type','=',4];
+                break;
+            //分销奖
+            case 'type5':
+                $where[] = ['change_type','=',5];
+                break;
+            //层级配对奖
+            case 'type6':
+                $where[] = ['change_type','=',6];
+                break;
+            //加权分红
+            case 'type7':
+                $where[] = ['change_type','=',7];
+                break;
+            //平级奖
+            case 'type8':
+                $where[] = ['change_type','=',8];
+                break;
+            //默认查余额
+            default:
+                break;
+        }
+        $where[] = ['change_time', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
+        $rows = $AccountLogModel->alias('a')->leftJoin('Member m','a.member_id=m.member_id')->field('a.*,m.username')->where($where)->order('change_time DESC')->select();
+        $return['income'] = 0;
+        $return['expend'] = 0;
+        $field = 'balance_money';
+        foreach ($rows as $key => $row) {
+            if ($row[$field] > 0) {
+                $return['income'] += $row[$field];
+                $row['value'] = '+' . $row[$field];
+            } else {
+                $return['expend'] += $row[$field] * -1;
+                $row['value'] = $row[$field];
+            }
+
+            $row['_time'] = timeTran($row['change_time']);
+            $return['list'][] = $row;
+        }
         return $this->ajaxReturn($return);
     }
 }

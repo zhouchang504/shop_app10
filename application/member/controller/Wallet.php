@@ -69,6 +69,13 @@ class Wallet  extends ClientbaseController{
         $this->assign('title', '排行榜');
         return $this->fetch('leaderboard');
     }
-
+    /*------------------------------------------------------ */
+    //-- 会员奖励明细
+    /*------------------------------------------------------ */
+    public function memberAccontLog(){
+        $this->assign('title', '会员奖励明细');
+        $this->assign('member_id', input('member_id', '', 'trim'));
+        return $this->fetch('member_accont_log');
+    }
 
 }?>

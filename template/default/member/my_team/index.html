@@ -51,7 +51,7 @@
 		<div>银行卡号：{{item.banknumber}}</div>
 		<div>开户行地址：{{item.bankaddress}}</div>
 		<div>住址：{{item.address}}</div>
-		<div><span class="fs22 color_w BGcolor_r fw_b w2rem" onclick="addMemberOrder({{item.member_id}})">报单</span></div>
+		<div><span class="fs22 color_w BGcolor_r fw_b w2rem" onclick="addMemberOrder({{item.member_id}})">报单</span><span class="fs22 color_w BGcolor_r fw_b w2rem" onclick="getMemberAccount({{item.member_id}})">日志</span></div>
 	</div>
 </div>
 {{/each}}
@@ -163,8 +163,10 @@ $('.tabBox').on('click','.cellBox .right',function(){
 	}
 })
 	function addMemberOrder(member_id){
-    	location.href = "/member/center/addMemberOrder/member_id/"+member_id;
+    	location.href = "/member/center/addMemberOrder/member_id/"+member_id+".html";
 	}
-
+	function getMemberAccount(member_id){
+		location.href = "/member/wallet/memberaccontlog/member_id/"+member_id+".html";
+	}
 </script>
 {/block}
