@@ -92,6 +92,7 @@ class MemberModel extends BaseModel
         $this->distribution_reward();//分销奖&层级配对奖
         $this->dividend_reward();//加权分红奖
         $this->samelevel_reward();//平级奖
+        $this->shop_reward($startRewardtime,$stopRewardtime);//店补奖
 
 
 
@@ -352,13 +353,14 @@ class MemberModel extends BaseModel
         $distribution_pv = settings('distribution_pv');
         if($this->orderAmoutArr) foreach ($this->orderAmoutArr as $key=>$item) {
             if($item){
+                $reward1Num = round($item * $distribution_pv / 100 , 2);
                 $data = array();
                 $data['member_id'] = $key;
-                $data['balance_money'] = $item;
+                $data['balance_money'] = $reward1Num;
                 $data['change_type'] = 4;
                 $data['change_desc'] = "奖励1";
                 $this->MemberAccountLogModel->change($data);
-                echo "用户ID".$key."获得奖励1:".($item*$distribution_pv/100)."元<br>";
+                echo "用户ID".$key."获得奖励1:".$reward1Num."元<br>";
             }
 
         }
@@ -448,7 +450,7 @@ class MemberModel extends BaseModel
                         $data['balance_money'] = $paiAmoutprice;
                         $data['change_type'] = 6;
                         $data['change_desc'] = "用户".$key."的".$thisDisNum."层层级配对奖";
-                        $data['by_id'] = $thisDisNum;
+                        $data['by_id'] = $key;
                         $this->MemberAccountLogModel->change($data);
                         echo "-- --用户ID".$pinfo['member_id']."获得用户".$key."的".$thisDisNum."层层级配对奖:".$paiAmoutprice."元<br>";
                     }
@@ -481,28 +483,28 @@ class MemberModel extends BaseModel
                 if(!empty($this->updateMemberArr[$i]))foreach ($this->updateMemberArr[$i] as $mid){
                     $data = array();
                     $data['member_id'] = $mid;
-                    $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100);
+                    $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100,2);
                     $data['change_type'] = 7;
                     $data['change_desc'] = "加权分红(高级经理)";
                     $this->MemberAccountLogModel->change($data);
-                    echo "-- -- --用户ID".$mid."获得(高级经理)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100)."元<br>";
+                    echo "-- -- --用户ID".$mid."获得(高级经理)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_1)*$this->allAmout*$settings['dividend_1']/100,2)."元<br>";
                     if($i >= 5){
                         $data = array();
                         $data['member_id'] = $mid;
-                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100);
+                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100,2);
                         $data['change_type'] = 7;
                         $data['change_desc'] = "加权分红(总监)";
                         $this->MemberAccountLogModel->change($data);
-                        echo "-- -- --用户ID".$mid."获得(总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100)."元<br>";
+                        echo "-- -- --用户ID".$mid."获得(总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_2)*$this->allAmout*$settings['dividend_2']/100,2)."元<br>";
                     }
                     if($i >= 6){
                         $data = array();
                         $data['member_id'] = $mid;
-                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100);
+                        $data['balance_money'] = round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100,2);
                         $data['change_type'] = 7;
                         $data['change_desc'] = "加权分红(高级总监)";
                         $this->MemberAccountLogModel->change($data);
-                        echo "-- -- --用户ID".$mid."获得(高级总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100)."元<br>";
+                        echo "-- -- --用户ID".$mid."获得(高级总监)加权分红奖:".round(($this->orderMaxAmoutArr[$mid]/$dividendAmout_3)*$this->allAmout*$settings['dividend_3']/100,2)."元<br>";
                     }
                 }
             }
@@ -523,14 +525,38 @@ class MemberModel extends BaseModel
                     $same_num++;
                     $data = array();
                     $data['member_id'] = $member_info['member_id'];
-                    $data['balance_money'] = round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100);
+                    $data['balance_money'] = round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100,2);
                     $data['change_type'] = 8;
                     $data['change_desc'] = "用户".$mid."的".$same_num."层平级奖";
                     $data['by_id'] = $mid;
                     $this->MemberAccountLogModel->change($data);
-                    echo "-- -- -- --用户ID".$member_info['member_id']."获得用户".$mid."的".$same_num."层平级奖:".round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100)."元<br>";
+                    echo "-- -- -- --用户ID".$member_info['member_id']."获得用户".$mid."的".$same_num."层平级奖:".round($this->orderMaxAmoutArr[$mid]*$settings['same_'.$same_num]/100,2)."元<br>";
                 }
             }while(!empty($member_info) && $same_num < 3);
+        }
+    }
+    /*------------------------------------------------------ */
+    //-- 店补奖
+    //-- $startRewardtime 奖励结算时间戳起始
+    //-- $stopRewardtime  奖励结算时间戳终止
+    /*------------------------------------------------------ */
+    function shop_reward($startRewardtime='',$stopRewardtime='')
+    {
+        $subsidy = settings('subsidy');
+        if (!$startRewardtime) $startRewardtime = strtotime(date("Y-m-1 00:00:00"));
+        if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
+        $AccountLogModel = new AccountLogModel();
+        $user_list = (new UsersModel)->select();
+        if($user_list)foreach ($user_list as $user_item){
+            $order_amount = $this->MemberOrderModel->where('user_id','=',$user_item['user_id'])->where('status','=',1)->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->sum('order_amount');
+            if($order_amount > 0){
+                $order_amount_pv = round($order_amount * $subsidy / 100 , 2);
+                $changedata['change_desc'] = '店补奖';
+                $changedata['change_type'] = 20;
+                $changedata['balance_money'] = $order_amount_pv;
+                $res = $AccountLogModel->change($changedata, $user_item['user_id']);
+                echo "-- -- -- -- --专卖店ID".$user_item['user_id']."获得店补奖:".$order_amount_pv."元<br>";
+            }
         }
     }
 }
