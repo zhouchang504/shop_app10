@@ -796,9 +796,9 @@ class Users extends ApiController
     /*------------------------------------------------------ */
     function addMemberOrder(){
         $input = input();
-        if (empty($input['member_id']))  return $this->error('请输入推荐人ID.');
+        if (empty($input['member_id']))  return $this->error('请输入报单人ID.');
         if (empty($input['order_amount']))  return $this->error('请输入报单金额.');
-        if (!is_numeric($input['member_id']))  return $this->error('推荐人ID必须是数字.');
+        if (!is_numeric($input['member_id']))  return $this->error('报单人ID必须是数字.');
         if (!is_numeric($input['order_amount']))  return $this->error('报单金额必须是数字.');
         if ($input['order_amount'] <= 0)  return $this->error('报单金额必须大于0.');
         if ($input['order_amount'] > $this->userInfo['account']['use_integral'])  return $this->error('报单金额不能超过剩余PV.');
