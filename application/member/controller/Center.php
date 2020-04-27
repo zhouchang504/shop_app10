@@ -123,6 +123,7 @@ class Center  extends ClientbaseController{
     /*------------------------------------------------------ */
     public function memberOrderLog(){
         $this->assign('title', '报单明细');
+        $this->assign('member_id', input('member_id'));
         return $this->fetch('member_order_log');
     }
     /*------------------------------------------------------ */

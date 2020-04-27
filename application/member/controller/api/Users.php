@@ -919,7 +919,7 @@ class Users extends ApiController
                 break;
         }
         $where[] = ['change_time', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
-        $rows = $AccountLogModel->alias('a')->leftJoin('Member m','a.member_id=m.member_id')->field('a.*,m.username')->where($where)->order('change_time DESC')->select();
+        $rows = $AccountLogModel->alias('a')->leftJoin('member m','a.member_id=m.member_id')->field('a.*,m.username')->where($where)->order('change_time DESC')->select();
         $return['income'] = 0;
         $return['expend'] = 0;
         $field = 'balance_money';
