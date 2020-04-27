@@ -78,6 +78,9 @@
         {gt name="goods.market_price" value="0"}
         <div class="original fs24 color_9">市场价￥{$goods.market_price}</div>
         {/gt}
+        {gt name="goods.give_pv" value="0"}
+        <div class="fs24 color_9">赠送PV {$goods.give_pv}</div>
+        {/gt}
         {volist name="priceList" id="prices" }
             {volist name="prices" id="price" }
             <div class="color_3 fs20 num money"><p class="fw_b fm_p">{$price.name}：￥</p><em class="fs22">{$price.price}</em></div>

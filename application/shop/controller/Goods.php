@@ -51,6 +51,13 @@ class Goods extends ClientbaseController{
         $this->assign('title', $goods['goods_name']);
 
 		$goods['m_goods_desc'] = preg_replace("/img(.*?)src=[\"|\'](.*?)[\"|\']/",'img class="lazy" width="750" src="/static/mobile/default/images/loading.svg" data-original="$2"',$goods['m_goods_desc']);
+        if($goods['give_integral']){
+            $goods['give_pv'] = $goods['give_integral'];
+        }else if($goods['give_integral'] === 0){
+            $goods['give_pv'] = round($goods['shop_price']);
+        }else{
+            $goods['give_pv'] = 0;
+        }
         $this->assign('goods', $goods);
         $this->assign('imgsList', $this->Model->getImgsList($goods_id));//获取图片
         $this->assign('skuImgs', $this->Model->getImgsList($goods_id,true,true));//获取sku图片
