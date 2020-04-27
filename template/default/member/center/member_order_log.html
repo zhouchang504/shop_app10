@@ -76,6 +76,7 @@
 		var arr = new Object;
 		arr.time = $('#nowValue').val();
 		arr.type = $("input[name='radiobox']:checked").val();
+        arr.member_id = "{$member_id}";
 		jq_ajax('{:url("member/api.Users/getMemberOrderLog")}',arr,function(res){
 		    if (res.code == 0){
 		        _alert(res.msg);

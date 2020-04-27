@@ -835,6 +835,7 @@ class Users extends ApiController
     {
         $type = input('type', 'success_member_order', 'trim');
         $time = input('time', '', 'trim');
+        $member_id = input('member_id', '', 'trim');
         if (empty($time)) {
             $time = date('Y年m月');
         }
@@ -844,6 +845,7 @@ class Users extends ApiController
         $MemberOrderModel = new MemberOrderModel();
         $where[] = ['user_id', '=', $this->userInfo['user_id']];
         $where[] = ['createtime', 'between', array($_time, strtotime(date('Y-m-t', $_time)) + 86399)];
+        if($member_id)$where[] = ['member_id', '=', $member_id];
         switch ($type) {
             case 'all_member_order'://所有明细
                 break;
