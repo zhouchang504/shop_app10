@@ -364,10 +364,40 @@
                                 {/eq}
                             </div>
                         </div>
+                        <!--<div class="form-group">-->
+                            <!--<label class="col-sm-1 control-label">买家留言：</label>-->
+                            <!--<div class="col-sm-8 form-control-static">-->
+                                <!--{$orderInfo.buyer_message}-->
+                            <!--</div>-->
+                        <!--</div>-->
                         <div class="form-group">
-                            <label class="col-sm-1 control-label">买家留言：</label>
-                            <div class="col-sm-8 form-control-static">
-                                {$orderInfo.buyer_message}
+                            <label class="col-sm-5 control-label">目标地点：</label>
+                            <div class="col-sm-8 ">
+                                <label>{$orderInfo.destination}</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">是否延期出库：</label>
+                            <div class="col-sm-8 ">
+                                <label>
+                                    {eq name="orderInfo.extension" value="1"}
+                                    是
+                                    {else/}
+                                    否
+                                    {/eq}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">箱数：</label>
+                            <div class="col-sm-8 ">
+                                <label>{$orderInfo.boxes}</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-5 control-label">物流费用：</label>
+                            <div class="col-sm-8 ">
+                                <label>{$orderInfo.logistics_costs}</label>
                             </div>
                         </div>
                         {gt name="$orderInfo.shipping_status" value="0"}

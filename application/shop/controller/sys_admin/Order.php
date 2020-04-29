@@ -340,6 +340,10 @@ class Order extends AdminController
             } elseif ($kd_type == 1) {
                 $shipping_id = input('post.shipping_id', 0, 'intval');
                 $invoice_no = input('post.invoice_no', '', 'trim');
+                $data['destination'] = input('post.destination', '', 'trim');
+                $data['extension'] = input('post.extension', '0', 'intval');
+                $data['boxes'] = input('post.boxes', '1', 'intval');
+                $data['logistics_costs'] = input('post.logistics_costs', '', 'trim');
                 if ($shipping_id < 1) return $this->error("请选择快递公司");
                 if (empty($invoice_no)) return $this->error("请输入快递单号");
                 $data['shipping_id'] = $shipping_id;

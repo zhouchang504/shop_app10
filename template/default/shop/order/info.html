@@ -115,11 +115,28 @@
     </div>
     
     
-    <div class="payInfo fs28 color_9">
+    <div class="payInfo fs28 color_9" style="height: auto">
             <span>支付方式:{$orderInfo.pay_name}</span>
             <span>下单时间:{$orderInfo.add_time|dateTpl}</span>
             <span>发货时间:{$orderInfo.shipping_time|dateTpl}</span>
             <span>确认收货时间:{$orderInfo.sign_time|dateTpl}</span>
+        <span>买家留言:{$orderInfo.buyer_message}</span>
+        <span>获赠PV:{$orderInfo.give_integral}</span>
+        <span>支付流水号:{$orderInfo.transaction_id}</span>
+        <span>快递方式:{$orderInfo.shipping_name}</span>
+        <span>发货单号:{$orderInfo.invoice_no}</span>
+
+        <span>目标地点:{$orderInfo.destination}</span>
+        <span>是否延期出库:
+                {eq name="orderInfo.extension" value="1"}
+                是
+                {else/}
+                否
+                {/eq}
+        </span>
+        <span>箱数:{$orderInfo.boxes}</span>
+        <span>物流费用:{$orderInfo.logistics_costs}</span>
+
     </div> 
     
     <div class="button">
