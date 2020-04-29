@@ -370,8 +370,9 @@ class MemberModel extends BaseModel
     /*------------------------------------------------------ */
     function base_salary_reward(){
         $base_salary = settings('base_salary');
+        $leveup_1 = settings('leveup_1');//合格经理业绩门槛
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            if($value == 1 && $this->memberOldLevelArr['$key'] == 0){
+            if($value == 1 && ($this->memberOldLevelArr['$key'] == 0 || $this->orderOldAmoutArr['$key'] > $leveup_1)){
                 $data = array();
                 $data['member_id'] = $key;
                 $data['balance_money'] = $base_salary;
