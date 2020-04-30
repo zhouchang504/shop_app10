@@ -66,7 +66,7 @@ class Order extends AdminController
             }
         }
         $search['role_id'] = input('role_id', '', 'trim');
-        if ($search['role_id']){
+        if ($search['role_id'] || $search['role_id'] === '0'){
             $roleuids = $MemberModel->where("role_id = '".$search['role_id']."'")->column('member_id');
             $roleuids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
             $uids = array_merge($uids,$roleuids);

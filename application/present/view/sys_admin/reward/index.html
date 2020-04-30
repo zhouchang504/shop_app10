@@ -19,6 +19,7 @@
             </div>
             <select name="role_id" style="width: 120px;" data-toggle="select2"  data-chang="submit">
                 <option value="">选择等级</option>
+                <option value="0">注册会员</option>
                 {foreach name="roleList" item="vo" key="k"}
                 <option value="{$k}">{$vo.role_name}</option>
                 {/foreach}
