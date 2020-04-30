@@ -1,0 +1,41 @@
+<table class="table table-bordered  ">
+<thead class="flip-content bordered-palegreen">
+<tr>
+    <th width="60">ID</th>
+    <th width="120">奖励金额</th>
+    <th width="120">奖励描述</th>
+    <th width="140">奖励时间</th>
+    <th width="60">会员ID</th>
+    <th width="140">昵称</th>
+    <th width="100">手机号</th>
+    <th width="80">会员等级</th>
+    <th width="100">推荐上级</th>
+    <th width="100">服务上级</th>
+</tr>
+</thead>
+<tbody>
+{volist name="data.list" id="vo" }
+<tr>
+    <td>{$vo.log_id}</td>
+    <td>{$vo.balance_money}</td>
+    <td>{$vo.change_desc}</td>
+    <td>{$vo.change_time|dateTpl}</td>
+    <td>{$vo.member_id}</td>
+    <td>{$vo.username}</td>
+    <td>{$vo.tel}</td>
+    <td>{eq name="vo.role_id" value="0"}
+        注册会员
+        {else/}
+        {$roleList[$vo['role_id']]['role_name']}
+        {/eq}</td>
+    <td>{$vo.pid}</td>
+    <td>{$vo.spid}</td>
+</tr>
+{/volist}
+</tbody>
+</table>
+{empty name="data.list"}
+<table width="100%" >
+ 	<tr><td height="300" colspan="8" align="center" valign="middle" >没有相关数据！</td></tr>
+</table>
+{/empty}

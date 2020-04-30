@@ -2,6 +2,7 @@
 
 namespace app\present\controller\sys_admin;
 
+use app\member\model\MemberAccountLogModel;
 use app\member\model\MemberOrderModel;
 use think\Db;
 use app\AdminController;
@@ -9,11 +10,11 @@ use app\member\model\MemberModel;
 use app\distribution\model\DividendRoleModel;
 
 /**
- * 报单
+ * 奖励
  * Class Index
  * @package app\store\controller
  */
-class Order extends AdminController
+class Reward extends AdminController
 {
     //*------------------------------------------------------ */
     //-- 初始化
@@ -21,7 +22,7 @@ class Order extends AdminController
     public function initialize($isretrun = true)
     {
         parent::initialize();
-        $this->Model = new MemberOrderModel();
+        $this->Model = new MemberAccountLogModel();
         $this->roleList = (new DividendRoleModel)->getRows();
         $this->assign("roleList", $this->roleList);
     }
@@ -61,6 +62,9 @@ class Order extends AdminController
             }else if(in_array($search['searchKey'],['pid','spid'])){
                 $uids = $MemberModel->where("pid = '".$search['keyword']."' OR spid = '".$search['keyword']."'")->column('member_id');
                 $uids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
+            }else if(in_array($search['searchKey'],['user_id'])){
+                $uids = $MemberModel->where("user_id = '".$search['keyword']."'")->column('member_id');
+                $uids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
             }else{
                 $where[] = [$search['searchKey'], 'like',"%".$search['keyword']."%"];
             }
@@ -75,9 +79,9 @@ class Order extends AdminController
         $reportrange = input('reportrange');
         if (empty($reportrange) == false){
             $dtime = explode('-',$reportrange);
-            $where[] = ['createtime','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
+            $where[] = ['change_time','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
         }else{
-            $where[] = ['createtime','between',[strtotime("-1 months"),time()]];
+            $where[] = ['change_time','between',[strtotime("-1 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
         if($this->data['list']){
@@ -115,7 +119,7 @@ class Order extends AdminController
     public function beforeAdd($row)
     {
         Db::startTrans();//启动事务
-        $row['createtime'] = time();
+        $row['change_time'] = time();
         return $row;
     }
     /*------------------------------------------------------ */
