@@ -23,7 +23,7 @@ class Sms extends ApiController{
         $smsTpl =  $smsTpl[$type];
         if (empty($smsTpl['sms_tpl_code'])) return $this->error('相关短信未设置.');
         $mobile = input('mobile','','trim');
-        if (empty($mobile) == true){
+        if (empty($mobile) == true || 1){
             $mobile = $this->userInfo['mobile'];
         }else{
             if (checkMobile($mobile) == false)  return $this->error('手机号码不正确.');
