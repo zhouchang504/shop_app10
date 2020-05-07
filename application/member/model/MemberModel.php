@@ -148,8 +148,8 @@ class MemberModel extends BaseModel
                 }
             }
         }
-        $this->orderMaxAmoutArr = $this->orderAmoutArr;
-        $this->memberOldLevelArr = $this->memberLevelArr;
+        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
+        $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
             if($value < 1){//经理以上才有资格拿奖励1
@@ -389,7 +389,7 @@ class MemberModel extends BaseModel
     function distribution_reward(){
         $settings = settings();
 //        $settings['distribution_1'];dump($this->memberLevelArr);dump($this->orderLupAmoutArr);
-        if($this->orderDisAmoutArr) foreach ($this->orderAmoutArr as $key=>$item) {
+        if($this->orderDisAmoutArr) foreach ($this->orderDisAmoutArr as $key=>$item) {
             if($this->memberLevelArr[$key] < 2)continue;//初级经理才有资格分销奖
             $thisDisNum = 0;//当前分销层数
             $maxDisNum = $this->memberLevelArr[$key] + 1;//最多分销层数
