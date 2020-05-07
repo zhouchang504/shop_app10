@@ -375,7 +375,7 @@ class MemberModel extends BaseModel
         $base_salary = settings('base_salary');
         $leveup_1 = settings('leveup_1');//合格经理团队业绩门槛(也是拿底薪奖门槛)
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            if($value == 1 && $this->orderOldAmoutArr['$key'] >= $leveup_1){
+            if($value == 1 && $this->orderOldAmoutArr[$key] >= $leveup_1){
                 $data = array();
                 $data['member_id'] = $key;
                 $data['balance_money'] = $base_salary;
