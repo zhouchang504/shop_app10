@@ -156,17 +156,14 @@ class MemberModel extends BaseModel
 //        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            if($this->orderOldAmoutArr[$key] >= $leveup_1){//当月报单9000才有资格拿
-                if($value < 1){//经理以上直接拿奖励1
-                    if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
-                        $this->memberLevelArr[$key] = 1;
-                    }else{
-                        $this->orderAmoutArr[$key] = 0;
-                    }
+            if($value < 1){//经理以上直接拿奖励1
+                if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
+                    $this->memberLevelArr[$key] = 1;
                 }else{
-//                    $this->orderAmoutArr[$key] += $this->orderOldAmoutArr[$key];
+                    $this->orderAmoutArr[$key] = 0;
                 }
-            }else{
+            }
+            if($this->orderOldAmoutArr[$key] < $leveup_1){//当月报单9000才有资格拿
                 $this->orderAmoutArr[$key] = 0;
             }
         }

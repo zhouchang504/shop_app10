@@ -9,6 +9,7 @@
     <th width="140">昵称</th>
     <th width="100">手机号</th>
     <th width="80">会员等级</th>
+    <th width="80">会员ID</th>
     <th width="100">推荐上级</th>
     <th width="100">服务上级</th>
     <th width="120">所属专卖店</th>
@@ -34,6 +35,7 @@
         {else/}
         {$roleList[$vo['role_id']]['role_name']}
         {/eq}</td>
+    <td>{$vo.member_id}</td>
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>
     <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>

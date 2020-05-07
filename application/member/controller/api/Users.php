@@ -95,6 +95,7 @@ class Users extends ApiController
         $OrderModel = new OrderModel();
         $return['orderStats'] = $OrderModel->userOrderStats($this->userInfo['user_id']);
         $return['userInfo'] = $this->userInfo;
+        $return['userInfo']['role']['role_name'] = "专卖店";
         $BonusModel = new BonusModel();
         $bonus = $BonusModel->getListByUser();
         $return['unusedNum'] = $bonus['unusedNum'];//未使用优惠券
