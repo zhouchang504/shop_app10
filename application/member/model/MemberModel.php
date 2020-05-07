@@ -93,9 +93,6 @@ class MemberModel extends BaseModel
         $this->dividend_reward();//加权分红奖
         $this->samelevel_reward();//平级奖
         $this->shop_reward($startRewardtime,$stopRewardtime);//店补奖
-
-
-
     }
     /*------------------------------------------------------ */
     //-- 移动业绩&临时等级
@@ -118,24 +115,30 @@ class MemberModel extends BaseModel
         }
         $this->orderDisAmoutArr = $this->orderOldAmoutArr;
         $member_list = $this->field('member_id,role_id,spid')->select();//团队报单数据
-        //保存本人业绩和等级
+        //保存本人等级
         if($member_list)foreach ($member_list as $item) {
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
+        }
+        $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
+        //保存本人业绩
+        if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
             $is_dis = true;
             $is_re1 = true;
             $parr = array();
-            do {//从自己开始循环找上级
-                if(!$is_re1 && $this->memberLevelArr[$pinfo['member_id']]){
-                    $is_re1 = false;
-                }else{
-                    $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
+            do {//从自己循环找上级
+                if($is_re1){
+                    if($this->memberOldLevelArr[$pinfo['member_id']] || ($this->orderOldAmoutArr[$pinfo['member_id']] >= $leveup_1 && $pinfo != $item)){
+                        $is_re1 = false;
+                        $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
+                    }
                 }
                 if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
                     $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
                 }else{
                     $is_dis = false;
                 }
+                $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
                 if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
@@ -148,25 +151,28 @@ class MemberModel extends BaseModel
                 }
             }
         }
-        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
-        $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
+//        dump($this->orderAmoutArr);
+//        dump($this->orderAmoutArr);
+//        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            if($value < 1){//经理以上才有资格拿奖励1
-                if($this->orderAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
-                    $this->memberLevelArr[$key] = 1;
-                    $diffnum = $this->orderAmoutArr[$key] - $leveup_1;
-                    $this->orderAmoutArr[$key] = $diffnum>$this->orderOldAmoutArr[$key]?$this->orderOldAmoutArr[$key]:$diffnum;
+            if($this->orderOldAmoutArr[$key] >= $leveup_1){//当月报单9000才有资格拿
+                if($value < 1){//经理以上直接拿奖励1
+                    if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
+                        $this->memberLevelArr[$key] = 1;
+                    }else{
+                        $this->orderAmoutArr[$key] = 0;
+                    }
                 }else{
-                    $this->orderAmoutArr[$key] = 0;
+//                    $this->orderAmoutArr[$key] += $this->orderOldAmoutArr[$key];
                 }
             }else{
-                $Amout = $this->orderOldAmoutArr[$key] + $leveup_1;
-                $this->orderAmoutArr[$key] = $this->orderAmoutArr[$key]>$Amout?$Amout:$this->orderAmoutArr[$key];
+                $this->orderAmoutArr[$key] = 0;
             }
         }
 //        dump($this->orderLupAmoutArr);
-//        dump($this->orderAmoutArr);dump($this->memberLevelArr);
+//        dump($this->orderAmoutArr);die;
+//        dump($this->memberLevelArr);
     }
     /*------------------------------------------------------ */
     //-- 判断升级(不包含判断合格经理)
