@@ -139,11 +139,13 @@ class MemberModel extends BaseModel
                     $is_dis = false;
                 }
                 $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
-                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];
+                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
+            //计算分销奖基数(移动业绩,层级从高到低)
             if($parr)foreach (array_reverse($parr,true) as $pkey=>$pitem){
-                if($this->orderDisAmoutArr[$pitem] < $distribution_max){
+                //分销业绩不够并且报单业绩不够,就得找人移动业绩给自己
+                if($pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max){
                     $diff = $distribution_max - $this->orderDisAmoutArr[$pitem];
                     $this->orderDisAmoutArr[$pitem] += $diff;
                     $this->orderDisAmoutArr[$item['member_id']] -= $diff;
@@ -151,6 +153,7 @@ class MemberModel extends BaseModel
                 }
             }
         }
+//        dump($this->orderDisAmoutArr);die;
 //        dump($this->orderAmoutArr);
 //        dump($this->orderAmoutArr);
 //        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
@@ -158,7 +161,7 @@ class MemberModel extends BaseModel
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
             if($value < 1){//经理以上直接拿奖励1
                 if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
-                    $this->memberLevelArr[$key] = 1;
+                    $this->memberLevelArr[$key] = 1;//临时升级
                 }else{
                     $this->orderAmoutArr[$key] = 0;
                 }
@@ -402,7 +405,7 @@ class MemberModel extends BaseModel
             //////////////////////查询出层级配对奖获得人//////////////////////
             $_member_info = $this->field('member_id,pid,spid')->where('member_id', $key)->find();//查询会员本人信息
             $member_info = $this->field('member_id')->where('member_id', $_member_info['pid'])->find();//查询推荐上级
-            $pinfo = array();//能那层级配对奖的上级
+            $pinfo = array();//能拿层级配对奖的上级
             if($this->memberLevelArr[$member_info['member_id']] < 4){
                 $member_info = $_member_info;
                 do{
@@ -421,23 +424,26 @@ class MemberModel extends BaseModel
                 $list = $this->where('spid','in',$_son_ids)->select();
                 $_son_ids = array();
                 if(count($list)){
-                    foreach ($list as $item){
-                        $_son_ids[] = $item['member_id'];
-                        $son_arr[] = $item['member_id'];
-                        if($this->orderDisAmoutArr[$item['member_id']] >= $settings['leveup_2_team_amount']){
+                    foreach ($list as $item){//找出所有下级存起来
+                        $_son_ids[] = $item['member_id'];//服务关系本层
+                        $son_arr[] = $item['member_id'];//分销关系本层
+                        if($this->orderOldAmoutArr[$item['member_id']] >= $settings['leveup_2_team_amount']){
                             $is_Dis = true;
                         }
                     }
                 }else{
                     break;
                 }
-                if($is_Dis){
+                //本层有人报单金额满9000或者所有层都没人满9000
+                if($is_Dis || (!empty($son_arr) && empty($_son_ids))){
+                    $is_Dis = false;
                     $thisDisNum++;
                     //分销奖
                     $disAmout = 0;
                     if($son_arr)foreach ($son_arr as $son_item){
                         $disAmout += $this->orderDisAmoutArr[$son_item];
                     }
+                    $son_arr = array();
                     $disAmoutprice = $disAmout * $settings['distribution_'.$thisDisNum] / 100;
                     $data = array();
                     $data['member_id'] = $key;
