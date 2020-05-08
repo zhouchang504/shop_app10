@@ -323,7 +323,7 @@
                                     <td>{$orderInfo.pay_time|dateTpl}</td>
 
                                     <td>{eq name="orderInfo.pay_code" value="offline"}
-                                        <img src="{$orderInfo.offlineimg}" style="width:200px;height: 200px;"  data-toggle="popover">
+                                        <a href="{$orderInfo.offlineimg}" target="_blank"><img src="{$orderInfo.offlineimg}" style="width:200px;height: 200px;"  data-toggle="popover">[放大查看]</a>
                                         {else}{$orderInfo.transaction_id}{/eq}</td>
                                 </tr>
                                 </tbody>
