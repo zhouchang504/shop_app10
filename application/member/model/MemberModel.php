@@ -142,6 +142,10 @@ class MemberModel extends BaseModel
             } while ($pinfo);
             //计算分销奖基数(移动业绩,层级从高到低)
             if($parr)foreach (array_reverse($parr,true) as $pkey=>$pitem){
+                //业绩已经被移动过就停
+                if($this->orderDisAmoutArr[$pitem] != $this->orderOldAmoutArr[$pitem]){
+                    break;
+                }
                 //分销业绩不够并且报单业绩不够,就得找人移动业绩给自己
                 if($pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max){
                     $diff = $distribution_max - $this->orderDisAmoutArr[$pitem];
@@ -431,8 +435,6 @@ class MemberModel extends BaseModel
                             $is_Dis = true;
                         }
                     }
-                }else{
-                    break;
                 }
                 //本层有人报单金额满9000或者所有层都没人满9000
                 if($is_Dis || (!empty($son_arr) && empty($_son_ids))){
