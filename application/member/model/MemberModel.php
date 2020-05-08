@@ -127,11 +127,9 @@ class MemberModel extends BaseModel
             $is_re1 = true;
             $parr = array();
             do {//从自己循环找上级
-                if($is_re1){
-                    if($this->memberOldLevelArr[$pinfo['member_id']] || ($this->orderOldAmoutArr[$pinfo['member_id']] >= $leveup_1 && $pinfo != $item)){
-                        $is_re1 = false;
-                        $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
-                    }
+                if($is_re1 && $this->orderOldAmoutArr[$pinfo['member_id']] >= $leveup_1 && $pinfo != $item){
+                    $is_re1 = false;
+                    $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
                 }
                 if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
                     $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
@@ -159,12 +157,14 @@ class MemberModel extends BaseModel
 //        $this->orderMaxAmoutArr = $this->orderAmoutArr;//最多业绩
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            if($value < 1){//经理以上直接拿奖励1
-                if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上也有资格拿奖励1
+            if($value < 1){//注册会员想拿奖励1
+                if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上的注册会员才有资格拿奖励1
                     $this->memberLevelArr[$key] = 1;//临时升级
                 }else{
                     $this->orderAmoutArr[$key] = 0;
                 }
+            }else{//经理以上直接拿奖励1(并且包含自己的报单业绩)
+                $this->orderAmoutArr[$key] += $this->orderOldAmoutArr[$key];
             }
             if($this->orderOldAmoutArr[$key] < $leveup_1){//当月报单9000才有资格拿
                 $this->orderAmoutArr[$key] = 0;
