@@ -1,0 +1,45 @@
+{extend name="mainadmin@layouts/base" /}
+{block name="main" }
+
+<header class="header  b-b clearfix">
+ 	<form id="forms" class="talbe-search form-inline "  method="post" action="{:url('getList')}" >
+     <div class="page-breadcrumbs">
+            <ul class="breadcrumb" >
+                <li>
+                    <i class="fa fa-ellipsis-v"></i>
+                    <strong>奖励明细</strong>
+                </li>                                  
+            </ul>
+              <div class="form-group">
+                    <a class="btn btn-default  " data-toggle="reportrange" data-change="submit">
+                        <i class="fa fa-calendar fa-lg"></i>
+                        <small>记录时间</small>
+                        <span></span> <b class="caret"></b>
+                        <input type="hidden" value="{$start_date} - {$end_date}" id="reportrange" name="reportrange" />
+                    </a>
+              </div>
+             <select name="searchKey" style="width: 120px;" data-toggle="select2"  data-chang="submit">
+                 <option value="">选择搜索类型</option>
+                 <option value="member_id">用户ID</option>
+                 <option value="tel">用户手机号</option>
+                 <option value="username">用户昵称</option>
+                 <option value="pid">推荐上级</option>
+                 <option value="spid">服务上级</option>
+                 <option value="user_id">所属专卖店</option>
+             </select>
+             <input type="text" class="form-control input-large" value="{$search.keyword}" name="keyword" placeholder="请输入" data-rule-required="true" />
+                <button class="btn btn-sm btn-default-iq" type="submit" title="搜索"><i class="fa fa-search"></i></button>
+        
+        </div>
+    </form>
+</header>
+
+<section class="scrollable wrapper w-f ">
+    <section class="panel panel-default ">
+        <div class="table-responsive " id="list_box">
+            {include file="sys_admin/dianbu_log/list" /}
+        </div>
+    </section>
+</section>
+
+{/block}
