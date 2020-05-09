@@ -18,16 +18,7 @@
                         <input type="hidden" value="{$start_date} - {$end_date}" id="reportrange" name="reportrange" />
                     </a>
               </div>
-             <select name="searchKey" style="width: 120px;" data-toggle="select2"  data-chang="submit">
-                 <option value="">选择搜索类型</option>
-                 <option value="member_id">用户ID</option>
-                 <option value="tel">用户手机号</option>
-                 <option value="username">用户昵称</option>
-                 <option value="pid">推荐上级</option>
-                 <option value="spid">服务上级</option>
-                 <option value="user_id">所属专卖店</option>
-             </select>
-             <input type="text" class="form-control input-large" value="{$search.keyword}" name="keyword" placeholder="请输入" data-rule-required="true" />
+             <input type="text" class="form-control input-large" value="{$search.keyword}" name="keyword" placeholder="请输入专卖店ID" data-rule-required="true" />
                 <button class="btn btn-sm btn-default-iq" type="submit" title="搜索"><i class="fa fa-search"></i></button>
         
         </div>
