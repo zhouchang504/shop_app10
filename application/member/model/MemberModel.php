@@ -217,7 +217,7 @@ class MemberModel extends BaseModel
                 $son_3 = 0;
                 $son_line_1 = 0;
                 foreach ($son_list as $son){
-                    if($this->get_role_sonnum($son['member_id'],4)){
+                    if($this->get_role_sonnum($son['member_id'],3)){
                         $son_3++;
                     }
                     if($this->get_role_sonnum($son['member_id'],1) && $this->orderMaxAmoutArr[$son['member_id']] >= $settings['leveup_4_team_amount']){
