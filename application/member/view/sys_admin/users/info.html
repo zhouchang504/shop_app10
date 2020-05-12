@@ -37,21 +37,22 @@
                                         <input onchange="upMobile()" id="mobile" type="text" value="{$row.mobile}">
                                       </label>
                                     </div>
-                                    <label class="control-label">会员等级：</label>
-                                    <div class="col-sm-3"><label>{$row.account.total_integral|userLevel}</label>
-                                        <a href="{:url('member/sys_admin.log_operate/index',array('edit_id'=>$row['user_id']))}" target="_blank"  class="m-xs" >
-                                            <i class="fa fa-search"></i> 查看会员日志
-                                        </a>
-                                    </div>
+                                    <!--<label class="control-label">会员等级：</label>-->
+                                    <!--<div class="col-sm-3"><label>{$row.account.total_integral|userLevel}</label>-->
+                                        <!--<a href="{:url('member/sys_admin.log_operate/index',array('edit_id'=>$row['user_id']))}" target="_blank"  class="m-xs" >-->
+                                            <!--<i class="fa fa-search"></i> 查看会员日志-->
+                                        <!--</a>-->
+                                    <!--</div>-->
                                 </div>
                                  <div class="form-group">
                                     <label class="control-label">真实姓名：</label>
                                     <div class="col-sm-3"><label>{$row.real_name|default='未填写'}</label></div>
                                    <label class="control-label">分销身份：</label>
-                                    <div class="col-sm-3"><label>{$row['role_id']==0?'粉丝':$roleList[$row['role_id']]['role_name']}</label>
-                                    <a href="javascript:;" title="修改分销身份" data-remote="{:url('editRole',array('user_id'=>$row['user_id']))}" data-toggle="ajaxModal" class="m-xs" >
-                <i class="fa fa-edit"></i>
-            </a>
+                                     <div class="col-sm-3"><label>专卖店</label>
+                                    <!--<div class="col-sm-3"><label>{$row['role_id']==0?'粉丝':$roleList[$row['role_id']]['role_name']}</label>-->
+                                    <!--<a href="javascript:;" title="修改分销身份" data-remote="{:url('editRole',array('user_id'=>$row['user_id']))}" data-toggle="ajaxModal" class="m-xs" >-->
+                <!--<i class="fa fa-edit"></i>-->
+            <!--</a>-->
                                     </div>
                                 </div>
                                
@@ -93,7 +94,7 @@
                                    </div>
                                 </div>  
                                  <div class="form-group">
-                                    <label class="control-label">消费积分：</label>
+                                    <label class="control-label">消费积分(PV)：</label>
                                     <div class="col-sm-3">
                                         <label>
                                         {$row.account.use_integral|intval} 
