@@ -146,7 +146,7 @@ class MemberModel extends BaseModel
                     $is_re1 = false;
                     $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
                 }
-                $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['pid'])->find();//查询上级
+                $pinfo = $this->field('member_id,pid,spid')->where('member_id', $pinfo['pid'])->find();//查询上级
             } while ($pinfo);
             //计算分销奖基数(移动业绩,层级从高到低)
             if($parr)foreach (array_reverse($parr,true) as $pkey=>$pitem){
