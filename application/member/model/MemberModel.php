@@ -417,7 +417,7 @@ class MemberModel extends BaseModel
                 $member_info = $_member_info;
                 do{
 //                    $member_info = $this->field('member_id,spid')->where('member_id', $member_info['spid'])->find();//查询服务上级
-                    $member_info = $this->field('member_id,spid')->where('member_id', $member_info['pid'])->find();//需求有变,改成查询服务上级
+                    $member_info = $this->field('member_id,pid,spid')->where('member_id', $member_info['pid'])->find();//需求有变,改成查询服务上级
                     if($this->memberLevelArr[$member_info['member_id']] >= 4){
                         $pinfo = $member_info;
                         break;
