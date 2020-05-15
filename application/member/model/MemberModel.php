@@ -124,8 +124,20 @@ class MemberModel extends BaseModel
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
             $is_dis = true;
-            $is_re1 = true;
             $parr = array();
+            do {//从自己循环找上级
+                if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
+                    $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
+                }else{
+                    $is_dis = false;
+                }
+                $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
+                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
+                $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
+            } while ($pinfo);
+
+            $is_re1 = true;
+            $pinfo = $item;
             do {//从自己循环找上级
                 if($is_re1 && $this->memberOldLevelArr[$item['member_id']]){
                     $is_re1 = false;//如果自己是合格经理则不再给上级累加业绩
@@ -134,13 +146,6 @@ class MemberModel extends BaseModel
                     $is_re1 = false;
                     $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
                 }
-                if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
-                    $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
-                }else{
-                    $is_dis = false;
-                }
-                $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
-                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
             //计算分销奖基数(移动业绩,层级从高到低)
