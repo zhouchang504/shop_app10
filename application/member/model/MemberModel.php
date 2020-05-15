@@ -114,7 +114,7 @@ class MemberModel extends BaseModel
             $this->allAmout += (float)$item['order_amounts'];
         }
         $this->orderDisAmoutArr = $this->orderOldAmoutArr;
-        $member_list = $this->field('member_id,role_id,spid')->select();//团队报单数据
+        $member_list = $this->field('member_id,role_id,pid,spid')->select();//团队报单数据
         //保存本人等级
         if($member_list)foreach ($member_list as $item) {
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
