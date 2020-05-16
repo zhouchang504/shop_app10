@@ -24,6 +24,11 @@
                 <option value="{$k}">{$vo.role_name}</option>
                 {/foreach}
             </select>
+            <select name="status" style="width: 120px;" data-toggle="select2"  data-chang="submit">
+                <option value="">订单状态</option>
+                <option value="1">正常</option>
+                <option value="2">作废</option>
+            </select>
             <select name="searchKey" style="width: 120px;" data-toggle="select2"  data-chang="submit">
                 <option value="member_id">用户ID</option>
                 <option value="tel">用户手机号</option>

@@ -48,7 +48,6 @@ class Order extends AdminController
     //-- $runData boolean 是否返回模板
     /*------------------------------------------------------ */
     public function getList($runData = false) {
-        $nowDate =date("Y-m-d");
         $where = [];
         $search['keyword'] = input('keyword', '', 'trim');
         $search['searchKey'] = input('searchKey', '', 'trim');
@@ -71,6 +70,10 @@ class Order extends AdminController
             $roleuids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
             $uids = array_merge($uids,$roleuids);
         }
+        $search['status'] = input('status', '', 'trim');
+        if ($search['status']){
+            $where[] = ['status', 'eq',"".$search['status'].""];
+        }
         if($uids)$where[] = ['member_id','in',$uids];
         $reportrange = input('reportrange');
         if (empty($reportrange) == false){
@@ -80,6 +83,7 @@ class Order extends AdminController
             $where[] = ['createtime','between',[strtotime("-1 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
+        $this->data['order_amount'] = $this->Model->where($where)->sum('order_amount');
         if($this->data['list']){
             $_list = array();
             foreach ($this->data['list'] as $item){
