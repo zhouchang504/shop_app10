@@ -62,7 +62,7 @@ class Order extends AdminController
                 $uids = $MemberModel->where("pid = '".$search['keyword']."' OR spid = '".$search['keyword']."'")->column('member_id');
                 $uids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
             }else{
-                $where[] = [$search['searchKey'], 'like',"%".$search['keyword']."%"];
+                $where[] = [$search['searchKey'], 'eq',"".$search['keyword'].""];
             }
         }
         $search['role_id'] = input('role_id', '', 'trim');
