@@ -2,6 +2,8 @@
 namespace app\mainadmin\controller;
 
 use app\AdminController;
+use app\member\model\MemberAccountLogModel;
+use app\member\model\MemberModel;
 use think\facade\Cache;
 
 use app\shop\model\OrderModel;
@@ -79,6 +81,8 @@ class Index extends AdminController
         unset($userWhere);
         $userWhere[] = ['last_time','>',$today];
         $userStats['today_sign'] = (new UsersSignModel)->where($userWhere)->count('sign_id');
+        $userStats['all_reward'] = (new MemberAccountLogModel)->sum('balance_money');
+        $userStats['member_nums'] = (new MemberModel)->count();
         $this->assign('userStats',$userStats);
         //end
         //清理数据提示

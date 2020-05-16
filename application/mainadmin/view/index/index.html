@@ -110,11 +110,11 @@
                         </span>
                 <a class="fl" href="{:url('member/sys_admin.users/index',['time_type'=>'reg_time','start_time'=>$today,'end_time'=>$today])}">
                     <span class="h3 block m-t-xs"><strong id="t_day_new_user">{$userStats['today_reg']}</strong></span>
-                    <small class="text-muted text-uc">今天新增会员</small>
+                    <small class="text-muted text-uc">今天新增专卖店</small>
                 </a>
-                <a class="fr" href="#">
-                    <span class="h3 block m-t-xs"><strong id="y_day_new_user">{$userStats['today_sign']}</strong></span>
-                    <small class="text-muted text-uc">今天签到会员</small>
+                <a class="fr" href="{:url('present/sys_admin.reward/index')}">
+                    <span class="h3 block m-t-xs"><strong id="y_day_new_user">{$userStats['all_reward']|priceFormat}</strong></span>
+                    <small class="text-muted text-uc">奖励总额</small>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -125,11 +125,11 @@
                         </span>
                 <a class="fl" href="{:url('member/sys_admin.users/index')}">
                     <span class="h3 block m-t-xs"><strong id="user_num">{$userStats['all_num']}</strong></span>
-                    <small class="text-muted text-uc">会员总数</small>
+                    <small class="text-muted text-uc">专卖店总数</small>
                 </a>
-                <a class="fr" href="{:url('member/sys_admin.users/index',array('rode_id'=>'all_role'))}">
-                    <span class="h3 block m-t-xs"><strong id="user_role_num">{$userStats['role_num']}</strong></span>
-                    <small class="text-muted text-uc">身份会员总数</small>
+                <a class="fr" href="{:url('present/sys_admin.users/index')}">
+                    <span class="h3 block m-t-xs"><strong id="user_role_num">{$userStats['member_nums']}</strong></span>
+                    <small class="text-muted text-uc">会员总数</small>
                 </a>
                 <div class="clearfix"></div>
             </div>
@@ -148,7 +148,7 @@
                 </a>
                 <a class="fr" href="#">
                     <span class="h3 block m-t-xs"><strong id="bean_total">{$account.use_integral|intval}</strong></span>
-                    <small class="text-muted text-uc">积分总数</small>
+                    <small class="text-muted text-uc">积分(PV)总数</small>
                 </a>
                 <div class="clearfix"></div>
             </div>

@@ -84,6 +84,7 @@ class Reward extends AdminController
             $where[] = ['change_time','between',[strtotime("-1 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
+        $this->data['balance_money'] = $this->Model->where($where)->sum('balance_money');
         if($this->data['list']){
             $_list = array();
             foreach ($this->data['list'] as $item){

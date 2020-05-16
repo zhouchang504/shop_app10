@@ -2,6 +2,7 @@
 
 namespace app\present\controller\sys_admin;
 
+use app\member\model\MemberAccountLogModel;
 use think\Db;
 use app\AdminController;
 use app\member\model\MemberModel;
@@ -65,8 +66,13 @@ class Users extends AdminController
             $where[] = ['regtime','between',[strtotime("-1 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
-        foreach ($this->data['list'] as $key=>$row){
+        $MemberAccountLogModel = new MemberAccountLogModel();
+        foreach ($this->data['list'] as $item){
+            $balance_moneys = $MemberAccountLogModel->where('member_id',$item['member_id'])->sum('balance_money');
+            $item['balance_moneys'] = $balance_moneys;
+            $_list[] = $item;
         }
+        $this->data['list'] = $_list;
         $this->assign("data", $this->data);
         if ($runData == false){
             $this->data['content'] = $this->fetch('list')->getContent();
