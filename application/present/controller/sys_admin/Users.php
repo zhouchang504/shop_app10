@@ -47,13 +47,12 @@ class Users extends AdminController
     //-- $runData boolean 是否返回模板
     /*------------------------------------------------------ */
     public function getList($runData = false) {
-        $nowDate =date("Y-m-d");
         $where = [];
         $search['keyword'] = input('keyword', '', 'trim');
         $search['searchKey'] = input('searchKey', '', 'trim');
 
         if (empty($search['keyword']) == false && $search['searchKey']) {
-            $where[] = [$search['searchKey'], 'like',"%".$search['keyword']."%"];
+            $where[] = [$search['searchKey'], 'eq',"".$search['keyword'].""];
         }
         $search['role_id'] = input('role_id', '', 'trim');
         if ($search['role_id']) $where[] = ['role_id','=',$search['role_id']];
