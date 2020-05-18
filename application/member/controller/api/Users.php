@@ -754,7 +754,6 @@ class Users extends ApiController
              $mun -= $allnum;
         }
         $data['share_bg'] = $data['share_bg'][$mun];
-
         $data['share_avatar_xy'] = settings('share_avatar_xy');
         $data['share_avatar_width'] = settings('share_avatar_width');
         $data['share_avatar_shape'] = settings('share_avatar_shape');
@@ -782,10 +781,13 @@ class Users extends ApiController
         if (empty($input['address']))  return $this->error('请输入住址.');
         if (!is_numeric($input['pid']))  return $this->error('推荐人ID必须是数字.');
         if (!is_numeric($input['spid']))  return $this->error('服务上级ID必须是数字.');
+        $MemberModel = new MemberModel();
+        $member_nums = $MemberModel->where('tel',$input['tel'])->count();
+        if($member_nums > 0)
+            return $this->error('手机号已存在');
         $insertData = $input;
         $insertData['user_id'] = $this->userInfo['user_id'];
         $insertData['regtime'] = time();
-        $MemberModel = new MemberModel();
         $res = $MemberModel->create($insertData);
         if($res){
             $this->success('录入会员信息成功.');
@@ -805,8 +807,10 @@ class Users extends ApiController
         if ($input['order_amount'] <= 0)  return $this->error('报单金额必须大于0.');
         if ($input['order_amount'] > $this->userInfo['account']['use_integral'])  return $this->error('报单金额不能超过剩余PV.');
         $MemberModel = new MemberModel();
-        $MemberInfo = $MemberModel->where('member_id',$input['member_id'])->where('user_id',$this->userInfo['user_id'])->find();
-        if(!$MemberInfo)return $this->error('ID' . $input['member_id'] . ' 不是您的会员.');
+        $MemberInfo = $MemberModel->where('member_id',$input['member_id'])->find();
+        if(!$MemberInfo)
+            $MemberInfo = $MemberModel->where('tel',$input['member_id'])->find();
+        if(!$MemberInfo)return $this->error('ID' . $input['member_id'] . ' 会员不存在.');
         $insertData = $input;
         $insertData['user_id'] = $this->userInfo['user_id'];
         $insertData['createtime'] = time();

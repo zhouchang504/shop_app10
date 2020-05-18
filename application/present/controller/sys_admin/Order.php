@@ -95,6 +95,7 @@ class Order extends AdminController
                 $item['role_id'] = $member['role_id'];
                 $item['pid'] = $member['pid'];
                 $item['spid'] = $member['spid'];
+                $item['member_user_id'] = $member['user_id'];
                 $_list[] = $item;
             }
             $this->data['list'] = $_list;

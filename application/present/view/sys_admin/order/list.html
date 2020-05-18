@@ -4,6 +4,7 @@
     <th width="60">订单ID</th>
     <th width="120">报单金额</th>
     <th width="100">状态</th>
+    <th width="120">报单专卖店</th>
     <th width="140">报单时间</th>
     <th width="140">失效时间</th>
     <th width="140">昵称</th>
@@ -12,7 +13,7 @@
     <th width="80">会员ID</th>
     <th width="100">推荐上级</th>
     <th width="100">服务上级</th>
-    <th width="120">所属专卖店</th>
+    <th width="120">会员专卖店</th>
     <th width="80">操作</th>
 </tr>
 </thead>
@@ -26,6 +27,7 @@
         {else/}
         失效
         {/eq}</td>
+    <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
     <td>{$vo.createtime|dateTpl}</td>
     <td>{$vo.invalidtime|dateTpl}</td>
     <td>{$vo.username}</td>
@@ -38,7 +40,7 @@
     <td>{$vo.member_id}</td>
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>
-    <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
+    <td>{$vo.member_user_id}-{$vo.member_user_id|userInfo}</td>
     <td >
         <a href="{:url('info',array('order_id'=>$vo['order_id']))}" title="编辑" class="fa fa-edit m-xs" ></a>
     </td>
