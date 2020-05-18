@@ -11,4 +11,5 @@
 
 return [
     'Reward' => 'app\\member\\command\\Reward',
+    'RewardComing' => 'app\\member\\command\\RewardComing',
 ];

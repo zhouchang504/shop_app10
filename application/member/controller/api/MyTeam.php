@@ -4,6 +4,7 @@ namespace app\member\controller\api;
 
 use app\ApiController;
 
+use app\distribution\model\DividendRoleModel;
 use app\member\model\MemberModel;
 
 /*------------------------------------------------------ */
@@ -32,6 +33,13 @@ class MyTeam extends ApiController
         }
         $this->sqlOrder = 'member_id DESC';
         $data = $this->getPageList($this->Model, join(' AND ', $where),'*',10);
+        $roleList = (new DividendRoleModel)->getRows();
+        if($data['list'])foreach ($data['list'] as $item){
+            $item['rolename'] = $roleList[$item['role_id']]['role_name'];
+            $item['comingrolename'] = $roleList[$item['coming_role_id']]['role_name'];
+            $_list[] = $item;
+        }
+        $data['list'] = $_list;
         $return['list'] = $data['list'];
         $return['page_count'] = $data['page_count'];
         $return['code'] = 1;

@@ -47,6 +47,26 @@
 		{/literal}
 		</span></div>
 		<div><span>推荐上级：{{item.pid}}</span><span>服务上级：{{item.spid}}</span></div>
+		<div>
+			<span>会员等级：
+			{literal}
+			{{if item.role_id==0}}
+			注册会员
+			{{else/}}
+			{{item.rolename}}
+			{{/if}}
+			{/literal}
+			</span>
+			<span>预估等级：
+			{literal}
+			{{if item.role_id==0}}
+			注册会员
+			{{else/}}
+			{{item.comingrolename}}
+			{{/if}}
+			{/literal}
+			</span>
+		</div>
 		<div>身份证：{{item.idcard}}</div>
 		<div>银行卡号：{{item.banknumber}}</div>
 		<div>开户行地址：{{item.bankaddress}}</div>

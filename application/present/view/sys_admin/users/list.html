@@ -4,7 +4,8 @@
     <th width="60">会员ID</th>
     <th width="140">昵称</th>
     <th width="100">手机号</th>
-    <th width="80">会员等级</th>
+    <th width="100">会员等级</th>
+    <th width="100">预估等级</th>
     <th width="100">推荐上级</th>
     <th width="100">服务上级</th>
     <th width="120">所属专卖店</th>
@@ -23,6 +24,11 @@
         注册会员
         {else/}
         {$roleList[$vo['role_id']]['role_name']}
+        {/eq}</td>
+    <td>{eq name="vo.coming_role_id" value="0"}
+        注册会员
+        {else/}
+        {$roleList[$vo['coming_role_id']]['role_name']}
         {/eq}</td>
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>

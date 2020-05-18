@@ -132,4 +132,10 @@ class Center  extends ClientbaseController{
     public function reward(){
         (new \app\member\model\MemberModel)->reward();
     }
+    /*------------------------------------------------------ */
+    //-- 奖励与升级(预览)
+    /*------------------------------------------------------ */
+    public function reward_coming(){
+        (new \app\member\model\MemberModel)->reward(false);
+    }
 }?>
