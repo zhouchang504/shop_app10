@@ -2,6 +2,8 @@
 
 namespace app\present\controller\sys_admin;
 
+use app\member\model\AccountLogModel;
+use app\member\model\AccountModel;
 use app\member\model\MemberOrderModel;
 use think\Db;
 use app\AdminController;
@@ -118,6 +120,21 @@ class Order extends AdminController
     /*------------------------------------------------------ */
     public function beforeAdd($row)
     {
+        if($row['status'] == '1'){
+            $order_amount = $row['order_amount'];
+            $use_integral = (new AccountModel)->where('user_id',$row['user_id'])->value('use_integral');
+            if ($use_integral < $order_amount){
+                return $this->error('PV不足');
+            }
+            $AccountLogModel = new AccountLogModel();
+            $inData['use_integral'] = $order_amount * -1;
+            $inData['change_type'] = 11;
+            $inData['change_desc'] = '报单';
+            $res = $AccountLogModel->change($inData, $row['user_id']);
+            if ($res != true) {
+                return $this->error('报单失败');
+            }
+        }
         Db::startTrans();//启动事务
         $row['createtime'] = time();
         return $row;
@@ -136,7 +153,42 @@ class Order extends AdminController
     /*------------------------------------------------------ */
     public function beforeEdit($row)
     {
+        $order_id = input('order_id');
+        $order_info = $this->Model->get($order_id);
+        if(empty($order_info))return $this->error('参数错误');
+        $reward_day = settings('reward_day');
+        if(date('Y',$order_info['createtime']) != date('Y') || date('m',$order_info['createtime']) != date('m') || date('d',$order_info['createtime']) <= $reward_day)
+            return $this->error('只能修改本期报单');
+        $row['old_order_amount'] = $order_info['order_amount'];
+        $row['old_status'] = $order_info['status'];
         if($row['status'] == 2)$row['invalidtime'] = time();
+        $AccountLogModel = new AccountLogModel();
+        if($row['status'] == '1'){
+            if($row['old_status'] == 1){
+                $order_amount = ($row['order_amount'] - $row['old_order_amount']);
+            }else{
+                $order_amount = $row['order_amount'];
+            }
+        }else{
+            if($row['old_status'] == 1){
+                $order_amount = $row['old_order_amount'] * -1;
+            }else{
+                $order_amount = 0;
+            }
+        }
+        if(abs($order_amount) > 0){
+            $use_integral = (new AccountModel)->where('user_id',$row['user_id'])->value('use_integral');
+            if ($use_integral < $order_amount){
+                return $this->error('PV不足');
+            }
+            $inData['use_integral'] = $order_amount * -1;
+            $inData['change_type'] = 11;
+            $inData['change_desc'] = '后台修改报单差额';
+            $res = $AccountLogModel->change($inData, $row['user_id']);
+            if ($res != true) {
+                return $this->error('修改报单失败');
+            }
+        }
         Db::startTrans();//启动事务
         return $row;
     }
@@ -145,6 +197,7 @@ class Order extends AdminController
     /*------------------------------------------------------ */
     public function afterEdit($row)
     {
+
         Db::commit();// 提交事务
         return $this->success('修改成功', url('index'));
     }

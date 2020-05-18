@@ -2,6 +2,9 @@
 {block name="head"}
 <link rel="stylesheet" href="__STATIC__/mobile/default/css/picker.css"/>
 <link rel="stylesheet" href="__STATIC__/mobile/default/css/wallet.css"/>
+<style>
+    span.w2rem{ width: 1rem; text-align: center; padding: 0.03rem .1rem; border-radius: 0.1rem}
+</style>
 {/block}
 {block name="pageType"}balanceDetail{/block}
 {block name="main" }
@@ -56,7 +59,8 @@
 {{each list as item index}}
 <div class="cell"  style="height: auto !important; margin-bottom: 0.2rem;">
 	<div class="left">
-		<p class="fs28 fw_b color_2">ID {{item.member_id}}</p>
+		<p class="fs28 fw_b color_2">ID {{item.member_id}}
+            <span class="fs22 color_w BGcolor_r fw_b w2rem" onclick="invalidOrder({{item.order_id}})">作废</span></p>
 		<span class="fs24 color_9">{{item._time}} </span>
 	</div>
 	<div class="right fs34 num {{item.value > 0 ? 'color_r' : 'color_3' }}">
@@ -151,6 +155,16 @@
                 nowValue.value = val;
 				getList();
             }
+        });
+    }
+    function invalidOrder(order_id){
+        jq_ajax('{:url("member/api.Users/invalidOrder")}','order_id='+order_id,function(res){
+            if (res.code == 0){
+                _alert(res.msg);
+                return false;
+            }
+            _alert(res.msg,location.href);
+            return true;
         });
     }
 </script>

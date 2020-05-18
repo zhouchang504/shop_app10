@@ -3,6 +3,7 @@
 namespace app\member\controller\api;
 
 use app\ApiController;
+use app\member\model\AccountModel;
 use app\member\model\MemberAccountLogModel;
 use app\member\model\MemberModel;
 use app\member\model\MemberOrderModel;
@@ -939,5 +940,37 @@ class Users extends ApiController
             $return['list'][] = $row;
         }
         return $this->ajaxReturn($return);
+    }
+    /*------------------------------------------------------ */
+    //-- 作废报单
+    /*------------------------------------------------------ */
+    public function invalidOrder()
+    {
+        $order_id = input('order_id');
+        $MemberOrderModel = new MemberOrderModel();
+        $order_info = $MemberOrderModel->where('order_id',$order_id)->where('user_id',$this->userInfo['user_id'])->find();
+        if(empty($order_info))return $this->error('参数错误');
+        if($order_info['status'] == '2')return $this->error('请勿重复作废报单');
+        $reward_day = settings('reward_day');
+        if(date('Y',$order_info['createtime']) != date('Y') || date('m',$order_info['createtime']) != date('m') || date('d',$order_info['createtime']) <= $reward_day)
+            return $this->error('只能作废本期报单');
+        $order_amount = $order_info['order_amount'];
+        $use_integral = (new AccountModel)->where('user_id',$order_info['user_id'])->value('use_integral');
+        if ($use_integral < $order_amount){
+            return $this->error('PV不足');
+        }
+        $order_res = $MemberOrderModel->where('order_id',$order_id)->where('user_id',$this->userInfo['user_id'])->update(['status'=>2]);
+        if ($order_res == false) {
+            return $this->error('作废报单失败');
+        }
+        $AccountLogModel = new AccountLogModel();
+        $inData['use_integral'] = $order_amount * 1;
+        $inData['change_type'] = 11;
+        $inData['change_desc'] = '作废报单';
+        $res = $AccountLogModel->change($inData, $order_info['user_id']);
+        if ($res != true) {
+            return $this->error('补回PV失败');
+        }
+        return $this->success('作废成功');
     }
 }
