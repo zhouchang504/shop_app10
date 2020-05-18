@@ -445,11 +445,11 @@ class OrderModel extends BaseModel
                 $inData['change_type'] = 2;
                 $inData['by_id'] = $orderInfo['order_id'];
                 $inData['change_desc'] = '签收订单获取积分:' . $orderInfo['order_sn'];
-                $res = $AccountLogModel->change($inData, $orderInfo['user_id']);
-                if ($res != true) {
-                    Db::rollback();//回滚
-                    return '签收赠送积分失败.';
-                }
+//                $res = $AccountLogModel->change($inData, $orderInfo['user_id']);
+//                if ($res != true) {
+//                    Db::rollback();//回滚
+//                    return '签收赠送积分失败.';
+//                }
             }
             unset($inData);
             $res = $this->distribution($orderInfo, 'sign');    //提成处理
@@ -500,11 +500,11 @@ class OrderModel extends BaseModel
                 } else {
                     $inData['change_desc'] = '退货退还积分:' . $orderInfo['order_sn'];
                 }
-                $res = $AccountLogModel->change($inData, $orderInfo['user_id']);
-                if ($res != true) {
-                    Db::rollback();//回滚
-                    return '退还积分失败.';
-                }
+//                $res = $AccountLogModel->change($inData, $orderInfo['user_id']);
+//                if ($res != true) {
+//                    Db::rollback();//回滚
+//                    return '退还积分失败.';
+//                }
             }
             //修改订单商品为不能评价
             $OrderGoodsModel->where('order_id', $order_id)->update(['is_evaluate' => 0]);
@@ -869,18 +869,33 @@ class OrderModel extends BaseModel
         $upData['is_pay_eval'] = 2;
         $this->where('order_id',$orderInfo['order_id'])->update($upData);
 
-        $UsersModel = new \app\member\model\UsersModel();
-        $user_role = $UsersModel->where('user_id',$orderInfo['user_id'])->value('role_id');
-        if($user_role <= 0){
-            $role_cid = settings('role_cid');
-            $OrderGoods = (new OrderGoodsModel)->where('order_id',$orderInfo['order_id'])->select()->toArray();
-            if($OrderGoods)foreach ($OrderGoods as $v){
-                $category_pid_arr = (new \app\shop\model\CategoryModel)->getParentCateIds($v['cid']);
-                if(in_array($role_cid,$category_pid_arr)){//判断是否在身份专区分类下
-                    $UsersModel->where('user_id',$orderInfo['user_id'])->update(['role_id'=>1]);
-                }
+
+        $AccountLogModel = new AccountLogModel();
+        $inData['total_integral'] = $orderInfo['give_integral'];
+        $inData['use_integral'] = $inData['total_integral'];
+        if ($inData['total_integral'] > 0) {
+            $inData['change_type'] = 2;
+            $inData['by_id'] = $orderInfo['order_id'];
+            $inData['change_desc'] = '下单获取积分:' . $orderInfo['order_sn'];
+            $res = $AccountLogModel->change($inData, $orderInfo['user_id']);
+            if ($res != true) {
+                Db::rollback();//回滚
+                return '下单获取积分失败.';
             }
         }
+        unset($inData);
+//        $UsersModel = new \app\member\model\UsersModel();
+//        $user_role = $UsersModel->where('user_id',$orderInfo['user_id'])->value('role_id');
+//        if($user_role <= 0){
+//            $role_cid = settings('role_cid');
+//            $OrderGoods = (new OrderGoodsModel)->where('order_id',$orderInfo['order_id'])->select()->toArray();
+//            if($OrderGoods)foreach ($OrderGoods as $v){
+//                $category_pid_arr = (new \app\shop\model\CategoryModel)->getParentCateIds($v['cid']);
+//                if(in_array($role_cid,$category_pid_arr)){//判断是否在身份专区分类下
+//                    $UsersModel->where('user_id',$orderInfo['user_id'])->update(['role_id'=>1]);
+//                }
+//            }
+//        }
         Db::commit();// 提交事务
         return true;
     }
