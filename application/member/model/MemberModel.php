@@ -213,16 +213,28 @@ class MemberModel extends BaseModel
         $theMemberLevelArr = $this->memberLevelArr;
         $settings = settings(); //获取设置信息
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
-            $son_5 = $this->get_role_sonnum($key,5);//团队内总监数量
-            //高级总监
-            //个人完成200元,团队培养3个总监
-            if($this->orderOldAmoutArr[$key] >= $settings['leveup_6'] && $son_5 >= $settings['leveup_6_team']){
-                $this->memberLevelArr[$key] = 6;
-                continue;
-            }
+//            $son_5 = $this->get_role_sonnum($key,5);//团队内总监数量
+//            //高级总监
+//            //个人完成200元,团队培养3个总监
+//            if($this->orderOldAmoutArr[$key] >= $settings['leveup_6'] && $son_5 >= $settings['leveup_6_team']){
+//                $this->memberLevelArr[$key] = 6;
+//                continue;
+//            }
             $son_list = $this->field('member_id')->where('spid', $key)->select();//查询下级
             if($son_list)
             {
+                ################################################↓高级总监↓################################################
+                $son_5 = 0;
+                foreach ($son_list as $son){
+                    if($this->get_role_sonnum($son['member_id'],5)){
+                        $son_5++;
+                    }
+                }
+                //个人完成200元,团队培养3条线总监
+                if($this->orderOldAmoutArr[$key] >= $settings['leveup_5'] && $son_5 >= $settings['leveup_5_team_order']){
+                    $this->memberLevelArr[$key] = 6;
+                    continue;
+                }
                 ################################################↓总监↓################################################
                 $son_4 = 0;
                 $son_line_1 = 0;
