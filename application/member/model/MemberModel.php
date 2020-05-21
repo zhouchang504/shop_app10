@@ -78,7 +78,7 @@ class MemberModel extends BaseModel
             $lastmonth = $thismonth - 1;
             $lastyear = $thisyear;
         }
-        if($is_true){
+        if($is_true != true){
             $thismonth += 1;
             if($thismonth > 12){
                 $thismonth = 1;
