@@ -956,7 +956,7 @@ class Users extends ApiController
         if(empty($order_info))return $this->error('参数错误');
         if($order_info['status'] == '2')return $this->error('请勿重复作废报单');
         $reward_day = settings('reward_day');
-        if(date('Y',$order_info['createtime']) != date('Y') || date('m',$order_info['createtime']) != date('m') || date('d',$order_info['createtime']) <= $reward_day)
+        if(date('Y',$order_info['createtime']) != date('Y') || date('m',$order_info['createtime']) != date('m') || date('d',$order_info['createtime']) < $reward_day)
             return $this->error('只能作废本期报单');
         $order_amount = $order_info['order_amount'];
         $use_integral = (new AccountModel)->where('user_id',$order_info['user_id'])->value('use_integral');
