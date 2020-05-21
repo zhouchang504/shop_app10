@@ -78,6 +78,18 @@ class MemberModel extends BaseModel
             $lastmonth = $thismonth - 1;
             $lastyear = $thisyear;
         }
+        if($is_true){
+            $thismonth += 1;
+            if($thismonth > 12){
+                $thismonth = 1;
+                $thisyear += 1;
+            }
+            $lastmonth += 1;
+            if($lastmonth > 12){
+                $lastmonth = 1;
+                $lastyear += 1;
+            }
+        }
         $startRewardtime = strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1;//奖励结算时间戳起始
         $stopRewardtime  = strtotime($thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59');  //奖励结算时间戳终止
         $whereOrder = array();
