@@ -89,7 +89,7 @@ class MemberModel extends BaseModel
                 $lastmonth = 1;
                 $lastyear += 1;
             }
-            $this->update(['coming_role_id'=>'0']);
+            $this->where('member_id','gt',0)->update(['coming_role_id'=>'0']);
         }
         $startRewardtime = strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1;//奖励结算时间戳起始
         $stopRewardtime  = strtotime($thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59');  //奖励结算时间戳终止
