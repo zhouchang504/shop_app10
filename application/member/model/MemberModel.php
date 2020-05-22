@@ -79,20 +79,12 @@ class MemberModel extends BaseModel
             $lastyear = $thisyear;
         }
         if($is_true != true){
-            $thismonth += 1;
-            if($thismonth > 12){
-                $thismonth = 1;
-                $thisyear += 1;
-            }
-            $lastmonth += 1;
-            if($lastmonth > 12){
-                $lastmonth = 1;
-                $lastyear += 1;
-            }
             $this->where('member_id','gt',0)->update(['coming_role_id'=>'0']);
         }
         $startRewardtime = strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1;//奖励结算时间戳起始
         $stopRewardtime  = strtotime($thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59');  //奖励结算时间戳终止
+        echo "起始:".$lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59<br>';
+        echo "终止:".$thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59<br>';
         $whereOrder = array();
         $whereOrder[] = ['createtime','between',[$startRewardtime,$stopRewardtime]];
         $whereOrder[] = ['status','=',1];
