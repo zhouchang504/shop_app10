@@ -13,7 +13,7 @@ class MemberModel extends BaseModel
 {
     protected $table = 'member';
     protected $mkey = 'member_info_mkey_';
-    public  $pk = 'member_id';
+    public    $pk = 'member_id';
     protected $MemberOrderModel;//报单模型
     protected $MemberAccountLogModel;//日志模型
 
@@ -115,8 +115,9 @@ class MemberModel extends BaseModel
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         $leveup_1 = settings('leveup_1');//合格经理业绩门槛
         $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
+        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
         $distribution_max = settings('distribution_max');//分销奖业绩移动标准
-        $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select();//团队报单数据
+        $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         if ($order_amount_list)foreach ($order_amount_list as $item) {//循环存储团队内每个人当月报单数据
             if ($this->orderOldAmoutArr[$item['member_id']] === null) {
                 $this->orderOldAmoutArr[$item['member_id']] = (float)$item['order_amounts'];
@@ -124,28 +125,40 @@ class MemberModel extends BaseModel
             $this->allAmout += (float)$item['order_amounts'];
         }
         $this->orderDisAmoutArr = $this->orderOldAmoutArr;
-        $member_list = $this->field('member_id,role_id,pid,spid')->select();//团队报单数据
+        $member_list = $this->field('member_id,role_id,pid,spid')->select()->toArray();//团队报单数据
         //保存本人等级
         if($member_list)foreach ($member_list as $item) {
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
         }
         $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
+        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
+        if($this->orderLupAmoutArr)foreach ($this->orderLupAmoutArr as $key=>$item) {
+            if($this->orderLupAmoutArr[$key] > $leveup_2_team_amount) {
+                $this->orderLupAmoutArr[$key] = $leveup_2_team_amount;
+            }
+        }
+        //计算升级初级业绩(反序)
+        if($member_list)foreach (array_reverse($member_list) as $item) {
+            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount * $leveup_2_team){
+                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
+                $this->orderLupAmoutArr[$item['member_id']] = 0;
+            }
+        }
         //保存本人业绩
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
-            $is_dis = true;
+//            $is_dis = true;
             $parr = array();
             do {//从自己循环找上级
-                if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
-                    $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
-                }else{
-                    $is_dis = false;
-                }
+//                if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
+//                    $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
+//                }else{
+//                    $is_dis = false;
+//                }
                 $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
                 if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
-
             $is_re1 = true;
             $pinfo = $item;
             do {//从自己循环找上级
@@ -212,7 +225,7 @@ class MemberModel extends BaseModel
 //                $this->memberLevelArr[$key] = 6;
 //                continue;
 //            }
-            $son_list = $this->field('member_id')->where('spid', $key)->select();//查询下级
+            $son_list = $this->field('member_id')->where('spid', $key)->select()->toArray();//查询下级
             if($son_list)
             {
                 ################################################↓高级总监↓################################################
@@ -272,15 +285,15 @@ class MemberModel extends BaseModel
                     continue;
                 }
                 ##############################################↓初级经理↓##############################################
-                $son_line_1 = 0;
-                $son_list[] = ['member_id'=>$key];
-                foreach ($son_list as $son){
-                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderLupAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
-                        $son_line_1++;
-                    }
-                }
+//                $son_line_1 = 0;
+//                $son_list[] = ['member_id'=>$key];
+//                foreach ($son_list as $son){
+//                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderLupAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
+//                        $son_line_1++;
+//                    }
+//                }
                 //个人完成200元,团队培养2名合格经理各自团队业绩满9000
-                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $son_line_1 >= $settings['leveup_2_team']){
+                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $this->orderLupAmoutArr[$key] >= $settings['leveup_2_team_amount']*$settings['leveup_2_team']){
                     $this->memberLevelArr[$key] = 2;
                     continue;
                 }
@@ -320,7 +333,7 @@ class MemberModel extends BaseModel
         if(!$stopRewardtime)$stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         if(!$onlyone)$son_ids = $this->get_role_son($member_id);//查出所有下级ID
         $son_ids[] = $member_id;
-        $order_amount_list = $this->MemberOrderModel->field('*,sum(order_amount) order_amounts')->where('member_id','in',$son_ids)->where('status','=','1')->where('createtime','between',[$startRewardtime,$stopRewardtime])->group('member_id')->select();//团队报单数据
+        $order_amount_list = $this->MemberOrderModel->field('*,sum(order_amount) order_amounts')->where('member_id','in',$son_ids)->where('status','=','1')->where('createtime','between',[$startRewardtime,$stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         $order_amount = 0;//团队总业绩
         if($order_amount_list)foreach ($order_amount_list as $item){
             if($this->orderAmoutArr[$item['member_id']] > 0 && $this->orderAmoutArr[$item['member_id']] === 0){
@@ -345,7 +358,7 @@ class MemberModel extends BaseModel
         $son_num = 0;
         $_son_ids = [$member_id];
         do{
-            $list = $this->where('spid','in',$_son_ids)->select();
+            $list = $this->where('spid','in',$_son_ids)->select()->toArray();
             $_son_ids = array();
             if($list){
                 foreach ($list as $item){
@@ -377,7 +390,7 @@ class MemberModel extends BaseModel
         $son_arr = array();
         $_son_ids = [$member_id];
         do{
-            $list = $this->where('spid','in',$_son_ids)->select();
+            $list = $this->where('spid','in',$_son_ids)->select()->toArray();
             $_son_ids = array();
             if($list){
                 foreach ($list as $item){
@@ -463,7 +476,7 @@ class MemberModel extends BaseModel
             //////////////////////查询出层级配对奖获得人//////////////////////
             $_son_ids = [$key];
             do{
-                $list = $this->where('spid','in',$_son_ids)->select();
+                $list = $this->where('spid','in',$_son_ids)->select()->toArray();
                 $_son_ids = array();
                 if(count($list)){
                     foreach ($list as $item){//找出所有下级存起来
@@ -602,7 +615,7 @@ class MemberModel extends BaseModel
         if (!$startRewardtime) $startRewardtime = strtotime(date("Y-m-1 00:00:00"));
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         $AccountLogModel = new AccountLogModel();
-        $user_list = (new UsersModel)->select();
+        $user_list = (new UsersModel)->select()->toArray();
         if($user_list)foreach ($user_list as $user_item){
             $order_amount = $this->MemberOrderModel->where('user_id','=',$user_item['user_id'])->where('status','=',1)->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->sum('order_amount');
             if($order_amount > 0){
