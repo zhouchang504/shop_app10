@@ -83,7 +83,7 @@ class MemberModel extends BaseModel
         }
         $startRewardtime = strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1;//奖励结算时间戳起始
         $stopRewardtime  = strtotime($thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59');  //奖励结算时间戳终止
-        echo "起始:".$lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59<br>';
+        echo "起始:".date('Y-m-d H:i:s',strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1).'<br>';
         echo "终止:".$thisyear . '-' . $thismonth . '-' . $theday . ' 23:59:59<br>';
         $whereOrder = array();
         $whereOrder[] = ['createtime','between',[$startRewardtime,$stopRewardtime]];
