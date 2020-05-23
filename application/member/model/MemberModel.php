@@ -21,7 +21,7 @@ class MemberModel extends BaseModel
 
     protected $orderAmoutArr;     //团队实时业绩(计算奖励1)
     protected $orderMaxAmoutArr;  //团队实时业绩(最多时)
-    protected $orderLupAmoutArr;  //团队实时业绩(升初级经理时)
+    protected $orderLupAmoutArr;  //团队实时业绩(升初级经理时)(作废)
     protected $orderDisAmoutArr;  //团队实时业绩(计算分销)
     protected $orderOldAmoutArr;  //团队本人业绩
     protected $memberLevelArr;    //会员实时等级
@@ -114,8 +114,8 @@ class MemberModel extends BaseModel
         if (!$startRewardtime) $startRewardtime = strtotime(date("Y-m-1 00:00:00"));
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         $leveup_1 = settings('leveup_1');//合格经理业绩门槛
-        $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
-        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
+//        $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
+//        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
         $distribution_max = settings('distribution_max');//分销奖业绩移动标准
         $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         if ($order_amount_list)foreach ($order_amount_list as $item) {//循环存储团队内每个人当月报单数据
@@ -131,19 +131,19 @@ class MemberModel extends BaseModel
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
         }
         $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
-        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
-        if($this->orderLupAmoutArr)foreach ($this->orderLupAmoutArr as $key=>$item) {
-            if($this->orderLupAmoutArr[$key] > $leveup_2_team_amount) {
-                $this->orderLupAmoutArr[$key] = $leveup_2_team_amount;
-            }
-        }
-        //计算升级初级业绩(反序)
-        if($member_list)foreach (array_reverse($member_list) as $item) {
-            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount * $leveup_2_team){
-                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
-                $this->orderLupAmoutArr[$item['member_id']] = 0;
-            }
-        }
+//        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
+//        if($this->orderLupAmoutArr)foreach ($this->orderLupAmoutArr as $key=>$item) {
+//            if($this->orderLupAmoutArr[$key] > $leveup_2_team_amount) {
+//                $this->orderLupAmoutArr[$key] = $leveup_2_team_amount;
+//            }
+//        }
+//        //计算升级初级业绩(反序)
+//        if($member_list)foreach (array_reverse($member_list) as $item) {
+//            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount * $leveup_2_team){
+//                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
+//                $this->orderLupAmoutArr[$item['member_id']] = 0;
+//            }
+//        }
         //保存本人业绩
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
@@ -193,16 +193,17 @@ class MemberModel extends BaseModel
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
             if($value < 1){//注册会员想拿奖励1
-                if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上的注册会员才有资格拿奖励1
+                if($this->orderAmoutArr[$key] >= $leveup_1){//即将升经理以上的注册会员才有资格拿奖励1
                     $this->memberLevelArr[$key] = 1;//临时升级
+                    $this->orderAmoutArr[$key] -= $leveup_1;//扣除升级所需(奖励1)团队业绩
                 }else{
                     $this->orderAmoutArr[$key] = 0;
                 }
             }else{//经理以上直接拿奖励1(并且包含自己的报单业绩)
                 $this->orderAmoutArr[$key] += $this->orderOldAmoutArr[$key];
             }
-            if($this->orderOldAmoutArr[$key] < $leveup_1){//当月报单9000才有资格拿
-                $this->orderAmoutArr[$key] = 0;
+            if($this->orderOldAmoutArr[$key] < $leveup_1){//当月报单9000才有资格拿(又改了,作废掉)
+                //$this->orderAmoutArr[$key] = 0;
             }
         }
 //        dump($this->orderLupAmoutArr);
@@ -285,15 +286,17 @@ class MemberModel extends BaseModel
                     continue;
                 }
                 ##############################################↓初级经理↓##############################################
-//                $son_line_1 = 0;
-//                $son_list[] = ['member_id'=>$key];
-//                foreach ($son_list as $son){
-//                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderLupAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
-//                        $son_line_1++;
-//                    }
-//                }
+                $son_line_1 = 0;
+                $son_list[] = ['member_id'=>$key];
+                foreach ($son_list as $son){
+                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderMaxAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
+                        $son_line_1++;
+                    }
+                }
+                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2_team_amount'])$son_line_1++;
                 //个人完成200元,团队培养2名合格经理各自团队业绩满9000
-                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $this->orderLupAmoutArr[$key] >= $settings['leveup_2_team_amount']*$settings['leveup_2_team']){
+                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $son_line_1 >= $settings['leveup_2_team']){
+//                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $this->orderLupAmoutArr[$key] >= $settings['leveup_2_team_amount']*$settings['leveup_2_team']){
                     $this->memberLevelArr[$key] = 2;
                     continue;
                 }
