@@ -166,7 +166,7 @@ class MemberModel extends BaseModel
                 if($is_re1 && $this->memberOldLevelArr[$item['member_id']]){
                     $is_re1 = false;//如果自己是合格经理则不再给上级累加业绩
                 }
-                if($is_re1 && $this->orderOldAmoutArr[$pinfo['member_id']] >= $leveup_1 && $pinfo != $item){
+                if($is_re1 && ($this->orderMaxAmoutArr[$pinfo['member_id']] >= $leveup_1 || $this->memberLevelArr[$pinfo['member_id']]) && $pinfo != $item){
                     $is_re1 = false;
                     $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加奖励1业绩
                 }
