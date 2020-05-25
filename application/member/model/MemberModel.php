@@ -114,8 +114,8 @@ class MemberModel extends BaseModel
         if (!$startRewardtime) $startRewardtime = strtotime(date("Y-m-1 00:00:00"));
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         $leveup_1 = settings('leveup_1');//合格经理业绩门槛
-//        $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
-//        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
+        $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
+        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
         $distribution_max = settings('distribution_max');//分销奖业绩移动标准
         $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         if ($order_amount_list)foreach ($order_amount_list as $item) {//循环存储团队内每个人当月报单数据
@@ -131,19 +131,20 @@ class MemberModel extends BaseModel
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
         }
         $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
-//        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
+        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
 //        if($this->orderLupAmoutArr)foreach ($this->orderLupAmoutArr as $key=>$item) {
 //            if($this->orderLupAmoutArr[$key] > $leveup_2_team_amount) {
 //                $this->orderLupAmoutArr[$key] = $leveup_2_team_amount;
 //            }
 //        }
-//        //计算升级初级业绩(反序)
-//        if($member_list)foreach (array_reverse($member_list) as $item) {
-//            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount * $leveup_2_team){
-//                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
-//                $this->orderLupAmoutArr[$item['member_id']] = 0;
-//            }
-//        }
+        //计算升级初级业绩(反序)
+        if($member_list)foreach (array_reverse($member_list) as $item) {
+            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount){
+                //如果本人业绩不满9000则转移给上级
+                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
+                $this->orderLupAmoutArr[$item['member_id']] = 0;
+            }
+        }
         //保存本人业绩
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
@@ -186,6 +187,7 @@ class MemberModel extends BaseModel
                 }
             }
         }
+//        dump($this->orderLupAmoutArr);die;
 //        dump($this->orderDisAmoutArr);die;
 //        dump($this->orderAmoutArr);
 //        dump($this->orderAmoutArr);
@@ -193,7 +195,7 @@ class MemberModel extends BaseModel
         //计算奖励1业绩和升级状态
         if($this->memberLevelArr)foreach($this->memberLevelArr as $key=>$value){
             if($value < 1){//注册会员想拿奖励1
-                if($this->orderAmoutArr[$key] >= $leveup_1){//即将升经理以上的注册会员才有资格拿奖励1
+                if($this->orderMaxAmoutArr[$key] >= $leveup_1){//即将升经理以上的注册会员才有资格拿奖励1
                     $this->memberLevelArr[$key] = 1;//临时升级
                     $this->orderAmoutArr[$key] -= $leveup_1;//扣除升级所需(奖励1)团队业绩
                 }else{
@@ -289,7 +291,7 @@ class MemberModel extends BaseModel
                 $son_line_1 = 0;
                 $son_list[] = ['member_id'=>$key];
                 foreach ($son_list as $son){
-                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderMaxAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
+                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderLupAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
                         $son_line_1++;
                     }
                 }
@@ -413,7 +415,7 @@ class MemberModel extends BaseModel
     {
         $distribution_pv = settings('distribution_pv');
         if($this->orderAmoutArr) foreach ($this->orderAmoutArr as $key=>$item) {
-            if($item){
+            if($item>0){
                 $reward1Num = round($item * $distribution_pv / 100 , 2);
                 $data = array();
                 $data['member_id'] = $key;
