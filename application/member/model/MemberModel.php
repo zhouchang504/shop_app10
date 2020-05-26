@@ -27,7 +27,7 @@ class MemberModel extends BaseModel
     protected $memberLevelArr;    //会员实时等级
     protected $memberOldLevelArr; //会员原本等级
     protected $updateMemberArr;   //各等级会员
-    protected $allAmout;  //全部业绩
+    protected $allAmout;          //全部业绩
     /*------------------------------------------------------ */
     //-- 优先自动执行
     /*------------------------------------------------------ */
@@ -146,19 +146,17 @@ class MemberModel extends BaseModel
                 $this->orderLupAmoutArr[$item['member_id']] = 0;
             }
         }
+        $is_move = array();
         //保存本人业绩
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
-//            $is_dis = true;
-            $parr = array();
+            $is_dis = false;
+            $parr = array();//推荐上级数组
+            $sparr = array();//服务上级数组
             do {//从自己循环找上级
-//                if($is_dis && $this->orderLupAmoutArr[$pinfo['member_id']] < $leveup_2_team_amount){
-//                    $this->orderLupAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加升级业绩
-//                }else{
-//                    $is_dis = false;
-//                }
                 $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
-                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
+                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max && $pinfo['spid']>0)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移(作废)
+//                $parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
             $is_re1 = true;
@@ -174,18 +172,23 @@ class MemberModel extends BaseModel
                 }
                 $pinfo = $this->field('member_id,pid,spid')->where('member_id', $pinfo['pid'])->find();//查询上级
             } while ($pinfo);
+//            dump(array_reverse($parr,true));
             //计算分销奖基数(移动业绩,层级从高到低)
             if($parr)foreach (array_reverse($parr,true) as $pkey=>$pitem){
-                //业绩已经被移动过就停
-                if($this->orderDisAmoutArr[$pitem] != $this->orderOldAmoutArr[$pitem]){
-                    break;
+                //业绩已经被移动过就跳过
+                if($is_move[$pitem]){
+                    continue;
                 }
-                //分销业绩不够并且报单业绩不够,就得找人移动业绩给自己
-                if($pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max){
+                //上级分销业绩不够并且报单业绩不够,就得移动业绩给他
+                if(!$is_dis && $pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max){
                     $diff = $distribution_max - $this->orderDisAmoutArr[$pitem];
                     $this->orderDisAmoutArr[$pitem] += $diff;
                     $this->orderDisAmoutArr[$item['member_id']] -= $diff;
-                    break;
+                    $is_dis = true;
+                    $is_move[$item['member_id']] = true;
+                }
+                if($is_dis){
+                    $is_move[$pitem] = true;
                 }
             }
         }
