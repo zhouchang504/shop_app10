@@ -492,12 +492,12 @@ class MemberModel extends BaseModel
                     foreach ($list as $item){//找出所有下级存起来
                         $_son_ids[] = $item['member_id'];//服务关系本层
                         $son_arr[] = $item['member_id'];//分销关系本层
-                        if($this->orderOldAmoutArr[$item['member_id']] >= $settings['leveup_2_team_amount']){
+                        if($this->orderOldAmoutArr[$item['member_id']] >= $settings['leveup_2_team_amount'] || $this->memberLevelArr[$item['member_id']] >= 2){
                             $is_Dis = true;
                         }
                     }
                 }
-                //本层有人报单金额满9000或者所有层都没人满9000
+                //本层有人报单金额满9000或者所有层都没人满9000或者有合格经理
                 if($is_Dis || (!empty($son_arr) && empty($_son_ids))){
                     $is_Dis = false;
                     $thisDisNum++;
