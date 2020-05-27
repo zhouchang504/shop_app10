@@ -115,7 +115,6 @@ class MemberModel extends BaseModel
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
         $leveup_1 = settings('leveup_1');//合格经理业绩门槛
         $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
-        $leveup_2_team = settings('leveup_2_team');//初级经理团队内合格经理数量门槛
         $distribution_max = settings('distribution_max');//分销奖业绩移动标准
         $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         if ($order_amount_list)foreach ($order_amount_list as $item) {//循环存储团队内每个人当月报单数据
@@ -148,18 +147,18 @@ class MemberModel extends BaseModel
         }
         $is_move = array();
         //保存本人业绩
+        $sparr = array();//全部服务上级数组
         if($member_list)foreach ($member_list as $item) {
             $pinfo = $item;
+            $is_re1 = true;
             $is_dis = false;
-            $parr = array();//推荐上级数组
-            $sparr = array();//服务上级数组
+            $parr = array();//推荐上级们数组
             do {//从自己循环找上级
                 $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
                 if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max && $pinfo['spid']>0)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移(作废)
 //                $parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
-            $is_re1 = true;
             $pinfo = $item;
             do {//从自己循环找上级
                 if($is_re1 && $this->memberOldLevelArr[$item['member_id']]){
@@ -169,6 +168,7 @@ class MemberModel extends BaseModel
                     $is_re1 = false;
 //                    $this->orderAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//给推荐上级或者自己累加奖励1业绩
                     $sparr[$item['member_id']] = $pinfo['member_id'];
+
                 }
                 $pinfo = $this->field('member_id,pid,spid')->where('member_id', $pinfo['pid'])->find();//查询上级
             } while ($pinfo);
