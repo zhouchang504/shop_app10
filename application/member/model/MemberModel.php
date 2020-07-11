@@ -303,7 +303,7 @@ class MemberModel extends BaseModel
                         $son_line_1++;
                     }
                 }
-                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2_team_amount'])$son_line_1++;
+//                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2_team_amount'])$son_line_1++;
                 //个人完成200元,团队培养2名合格经理各自团队业绩满9000
                 if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $son_line_1 >= $settings['leveup_2_team']){
 //                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $this->orderLupAmoutArr[$key] >= $settings['leveup_2_team_amount']*$settings['leveup_2_team']){
