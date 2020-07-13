@@ -158,7 +158,9 @@ class Order extends AdminController
         $order_info = $this->Model->get($order_id);
         if(empty($order_info))return $this->error('参数错误');
         $reward_day = settings('reward_day');
-        if(date('Y',$order_info['createtime']) != date('Y') || date('m',$order_info['createtime']) != date('m') || date('d',$order_info['createtime']) <= $reward_day)
+        if(date('Y',$order_info['createtime']) != date('Y') ||
+            date('m',$order_info['createtime']) != date('m') || 
+            (date('d',$order_info['createtime']) < $reward_day && date('d') >= $reward_day))
             return $this->error('只能修改本期报单');
         $row['old_order_amount'] = $order_info['order_amount'];
         $row['old_status'] = $order_info['status'];
