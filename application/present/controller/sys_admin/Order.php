@@ -39,7 +39,7 @@ class Order extends AdminController
             $this->assign("start_date", $dtime[0]);
             $this->assign("end_date", $dtime[1]);
         } else {
-            $this->assign("start_date", date('Y/m/01', strtotime("-1 months")));
+            $this->assign("start_date", date('Y/m/01', strtotime("-6 months")));
             $this->assign("end_date", date('Y/m/d'));
         }
         $this->getList(true);
@@ -82,7 +82,7 @@ class Order extends AdminController
             $dtime = explode('-',$reportrange);
             $where[] = ['createtime','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
         }else{
-            $where[] = ['createtime','between',[strtotime("-1 months"),time()]];
+            $where[] = ['createtime','between',[strtotime("-6 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
         $this->data['order_amount'] = $this->Model->where($where)->sum('order_amount');

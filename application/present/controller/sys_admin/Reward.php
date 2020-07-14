@@ -38,7 +38,7 @@ class Reward extends AdminController
             $this->assign("start_date", $dtime[0]);
             $this->assign("end_date", $dtime[1]);
         } else {
-            $this->assign("start_date", date('Y/m/01', strtotime("-1 months")));
+            $this->assign("start_date", date('Y/m/01', strtotime("-6 months")));
             $this->assign("end_date", date('Y/m/d'));
         }
         $this->getList(true);
@@ -81,7 +81,7 @@ class Reward extends AdminController
             $dtime = explode('-',$reportrange);
             $where[] = ['change_time','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
         }else{
-            $where[] = ['change_time','between',[strtotime("-1 months"),time()]];
+            $where[] = ['change_time','between',[strtotime("-6 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
         $this->data['balance_money'] = $this->Model->where($where)->sum('balance_money');

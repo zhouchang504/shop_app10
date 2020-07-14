@@ -37,7 +37,7 @@ class Users extends AdminController
             $this->assign("start_date", $dtime[0]);
             $this->assign("end_date", $dtime[1]);
         } else {
-            $this->assign("start_date", date('Y/m/01', strtotime("-1 months")));
+            $this->assign("start_date", date('Y/m/01', strtotime("-6 months")));
             $this->assign("end_date", date('Y/m/d'));
         }
         $this->getList(true);
@@ -63,7 +63,7 @@ class Users extends AdminController
             $dtime = explode('-',$reportrange);
             $where[] = ['regtime','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
         }else{
-            $where[] = ['regtime','between',[strtotime("-1 months"),time()]];
+            $where[] = ['regtime','between',[strtotime("-6 months"),time()]];
         }
         $this->data = $this->getPageList($this->Model, $where);
         $MemberAccountLogModel = new MemberAccountLogModel();
