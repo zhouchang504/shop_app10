@@ -386,13 +386,11 @@ class Users extends AdminController
             return $this->ajaxReturn($result);
         }
         $DividendRole = (new DividendRoleModel)->getRows();
-        $UsersBindModel = new UsersBindModel();
         $MemberModel = new MemberModel();
-//            $rows = $MemberModel->field('user_id,nick_name,role_id')->where('pid', $user_id)->select();
         if($next == 'undefined'){
             $rows = $MemberModel->where('user_id', $user_id)->select();
         }else{
-            $rows = $MemberModel->where('pid', $user_id)->select();
+            $rows = $MemberModel->where('spid', $user_id)->select();
         }
 
         $theday = settings('reward_day');//结算日(原需求10号)
