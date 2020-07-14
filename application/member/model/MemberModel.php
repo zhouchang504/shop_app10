@@ -130,7 +130,7 @@ class MemberModel extends BaseModel
             $this->memberLevelArr[$item['member_id']] = $item['role_id'] ? 1 : 0;//记录等级(只保留合格经理不降级)
         }
         $this->memberOldLevelArr = $this->memberLevelArr;//原本等级(注册会员或合格经理)
-        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
+//        $this->orderLupAmoutArr = $this->orderOldAmoutArr;
         $this->orderAmoutArr = $this->orderOldAmoutArr;
 //        if($this->orderLupAmoutArr)foreach ($this->orderLupAmoutArr as $key=>$item) {
 //            if($this->orderLupAmoutArr[$key] > $leveup_2_team_amount) {
@@ -138,13 +138,13 @@ class MemberModel extends BaseModel
 //            }
 //        }
         //计算升级初级业绩(反序)
-        if($member_list)foreach (array_reverse($member_list,true) as $item) {
-            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount){
-                //如果本人业绩不满9000则转移给上级
-                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
-                $this->orderLupAmoutArr[$item['member_id']] = 0;
-            }
-        }
+//        if($member_list)foreach (array_reverse($member_list,true) as $item) {
+//            if($item['pid'] && $this->orderLupAmoutArr[$item['member_id']] < $leveup_2_team_amount){
+//                //如果本人业绩不满9000则转移给上级
+//                $this->orderLupAmoutArr[$item['pid']] += $this->orderLupAmoutArr[$item['member_id']];
+//                $this->orderLupAmoutArr[$item['member_id']] = 0;
+//            }
+//        }
         $is_move = array();
         //保存本人业绩
         $sparr = array();//全部服务上级数组
@@ -297,13 +297,13 @@ class MemberModel extends BaseModel
                 }
                 ##############################################↓初级经理↓##############################################
                 $son_line_1 = 0;
-                $son_list[] = ['member_id'=>$key];
+//                $son_list[] = ['member_id'=>$key];
                 foreach ($son_list as $son){
-                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderLupAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
+                    if($this->get_role_sonnum($son['member_id'],1) && $this->orderMaxAmoutArr[$son['member_id']] >= $settings['leveup_2_team_amount']){
                         $son_line_1++;
                     }
                 }
-//                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2_team_amount'])$son_line_1++;
+                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2_team_amount'])$son_line_1++;
                 //个人完成200元,团队培养2名合格经理各自团队业绩满9000
                 if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $son_line_1 >= $settings['leveup_2_team']){
 //                if($this->orderOldAmoutArr[$key] >= $settings['leveup_2'] && $this->orderLupAmoutArr[$key] >= $settings['leveup_2_team_amount']*$settings['leveup_2_team']){
