@@ -4,6 +4,7 @@ namespace app\member\controller\sys_admin;
 
 use app\AdminController;
 use app\member\model\MemberModel;
+use app\member\model\MemberOrderModel;
 use app\member\model\UsersModel;
 use app\member\model\UsersBindSuperiorModel;
 
@@ -394,11 +395,38 @@ class Users extends AdminController
             $rows = $MemberModel->where('pid', $user_id)->select();
         }
 
+        $theday = settings('reward_day');//结算日(原需求10号)
+        $thisday = date('d');
+        $thismonth = date('m');
+        $thisyear = date('Y');
+
+        if($thisday < $theday){
+            if ($thismonth == 1) {
+                $lastmonth = 12;
+                $lastyear = $thisyear - 1;
+            } else {
+                $lastmonth = $thismonth - 1;
+                $lastyear = $thisyear;
+            }
+        }else{
+            $lastmonth = $thismonth;
+            $lastyear = $thisyear;
+        }
+        //如果没过结算日则计算上个月结算日到现在
+        //如果过了结算日则计算这个月结算日到现在
+        $startRewardtime = strtotime($lastyear . '-' . $lastmonth . '-' . $theday . ' 23:59:59')+1;//奖励结算时间戳起始
+        $stopRewardtime  = strtotime($thisyear . '-' . $thismonth . '-' . $thisday . ' 23:59:59');  //奖励结算时间戳终止
+        $whereOrder = array();
+        $whereOrder[] = ['createtime','between',[$startRewardtime,$stopRewardtime]];
+        $whereOrder[] = ['status','=',1];
+        $MemberOrderModel = new MemberOrderModel();
         foreach ($rows as $key => $row) {
+            $order_amount = $MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('member_id','=',$row['member_id'])->where($whereOrder)->find();//报单数据
+            $row['order_amount'] = $order_amount['order_amounts'] ? $order_amount['order_amounts'] : 0;
             $row['user_id'] = $row['member_id'];
             $row['nick_name'] = $row['username'];
             $row['role_name'] = $DividendRole[$row['role_id']]['role_name'];
-            $row['teamCount'] = $MemberModel->where('pid', $row['member_id'])->count() + 1;
+            $row['teamCount'] = $MemberModel->where('pid', $row['member_id'])->count();
             $rows[$key] = $row;
         }
         $result['list'] = $rows;

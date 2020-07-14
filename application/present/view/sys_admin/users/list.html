@@ -32,7 +32,7 @@
         {/eq}</td>
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>
-    <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
+    <td><a href="/zpadmin.php/member/sys_admin.users/info/user_id/{$vo.user_id}.html">{$vo.user_id}-{$vo.user_id|userInfo}</a></td>
     <td>{$vo.balance_moneys|priceFormat}</td>
     <td >{$vo.regtime|dateTpl}</td>
     <td >

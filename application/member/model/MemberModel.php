@@ -68,7 +68,7 @@ class MemberModel extends BaseModel
     {
         if($is_true != true)
             $this->is_true = false;
-        $theday = settings('reward_day');//结算日(每月10号)
+        $theday = settings('reward_day');//结算日(原需求10号)
         $thismonth = date('m');
         $thisyear = date('Y');
         if ($thismonth == 1) {

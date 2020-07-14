@@ -27,7 +27,7 @@
         {else/}
         失效
         {/eq}</td>
-    <td>{$vo.user_id}-{$vo.user_id|userInfo}</td>
+    <td><a href="/zpadmin.php/member/sys_admin.users/info/user_id/{$vo.user_id}.html">{$vo.user_id}-{$vo.user_id|userInfo}</a></td>
     <td>{$vo.createtime|dateTpl}</td>
     <td>{$vo.invalidtime|dateTpl}</td>
     <td>{$vo.username}</td>
@@ -40,7 +40,7 @@
     <td>{$vo.member_id}</td>
     <td>{$vo.pid}</td>
     <td>{$vo.spid}</td>
-    <td>{$vo.member_user_id}-{$vo.member_user_id|userInfo}</td>
+    <td><a href="/zpadmin.php/member/sys_admin.users/info/user_id/{$vo.member_user_id}.html">{$vo.member_user_id}-{$vo.member_user_id|userInfo}</a></td>
     <td >
         <a href="{:url('info',array('order_id'=>$vo['order_id']))}" title="编辑" class="fa fa-edit m-xs" ></a>
     </td>
