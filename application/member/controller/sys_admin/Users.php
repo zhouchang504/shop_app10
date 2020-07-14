@@ -426,6 +426,7 @@ class Users extends AdminController
             $row['user_id'] = $row['member_id'];
             $row['nick_name'] = $row['username'];
             $row['role_name'] = $DividendRole[$row['role_id']]['role_name'];
+            $row['coming_role_name'] = $DividendRole[$row['coming_role_id']]['role_name'];
             $row['teamCount'] = $MemberModel->where('pid', $row['member_id'])->count();
             $rows[$key] = $row;
         }
