@@ -22,7 +22,8 @@
                             <li><a href="#tabbank" data-toggle="tab">会员资料</a></li>
                             <li><a href="#tabdescribe" data-toggle="tab">地址信息</a></li>
                             <li><a href="#superior" class="superior_tab" data-toggle="tab">上级关系树</a></li>
-                            <li><a href="#tabchain" class="tabchain_tab" data-toggle="tab">下级关系树(九级团队人数 - {$teamCount})</a></li>
+                            <li><a href="#tabchain" class="tabchain_tab" data-toggle="tab">下级专卖店关系树(九级团队人数 - {$teamCount})</a></li>
+                            <li><a href="#tabmemberchain" class="tabmemberchain_tab" data-toggle="tab">下级会员关系树</a></li>
                             <li><a href="#stat" class="stat_tab" data-toggle="tab">业绩统计</a></li>
                         </ul>
                     </header>
@@ -263,6 +264,10 @@
                             <div class="tab-pane" id="tabchain" style="overflow: hidden">
                                	<div class="table-responsive"></div>
                              </div>
+                           <!--下级关系树-->
+                           <div class="tab-pane" id="tabmemberchain" style="overflow: hidden">
+                               <div class="table-memberchain"></div>
+                           </div>
                            <!--统计-->
                            <div class="tab-pane" id="stat" style="overflow: hidden">
 
@@ -399,9 +404,17 @@
 			getChainList({$row['user_id']});
 		}
 	})
-	$(document).on('click','.next_btn',function(){
+    $('.tabmemberchain_tab').click(function(){
+        if ($('#tabmemberchain').find('.table-memberchain').html() == ''){
+            getMemberChainList({$row['user_id']});
+        }
+    })
+	$(document).on('click','.table-responsive .next_btn',function(){
 		getChainList($(this).data('id'),true)
 	})
+    $(document).on('click','.table-memberchain .next_btn',function(){
+        getMemberChainList($(this).data('id'),true)
+    })
 	//加载上级
 	function getSuperiorList(uid){
 		jq_ajax('{:url("sys_admin.users/getSuperiorList")}','user_id='+uid,function(res){
@@ -447,6 +460,39 @@
 			}
 		});
 	}
+    //加载下级会员
+    function getMemberChainList(uid,next){
+        if ($("#next_box_"+uid).html() != '' && typeof($("#next_box_"+uid).html()) != 'undefined'){
+            if ($("#next_box_"+uid).is(':visible')){
+                $("#next_box_"+uid).addClass('hide');
+            }else{
+                $("#next_box_"+uid).removeClass('hide');
+            }
+            return false;
+        }
+        jq_ajax('{:url("sys_admin.users/getMenberChainList")}','user_id='+uid+'&next='+next,function(res){
+            if (next == true){
+                if (res.list.length > 0){
+                    res.nextlevel = $('#next_box_'+uid).data('nextlevel') + 1;
+                    res.icon = '';
+                    for (var i=0;i<res.nextlevel;i++){
+                        res.icon += '&nbsp;|-- &nbsp;';
+                    }
+                    console.log(res.icon)
+                    $('#next_box_'+uid).html(template('chainlist',res));
+                }else{
+                    $('#next_box_'+uid).html(' ');
+                }
+            }else{
+                if (res.list.length > 0) {
+                    res.nextlevel = 0;
+                    $('#tabmemberchain .table-memberchain').html(template('chainlist', res));
+                }else{
+                    $('#tabmemberchain .table-memberchain').html('没有下级');
+                }
+            }
+        });
+    }
 	//执行统计
     $('.evalStat').click(function(){
         jq_ajax('{:url("evalStat")}','user_id={$row.user_id}&reportrange='+$('#reportrange').val(),function(res) {

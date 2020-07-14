@@ -3,6 +3,7 @@
 namespace app\member\controller\sys_admin;
 
 use app\AdminController;
+use app\member\model\MemberModel;
 use app\member\model\UsersModel;
 use app\member\model\UsersBindSuperiorModel;
 
@@ -367,6 +368,37 @@ class Users extends AdminController
         foreach ($rows as $key => $row) {
             $row['role_name'] = $DividendRole[$row['role_id']]['role_name'];
             $row['teamCount'] = $UsersBindModel->where('pid', $row['user_id'])->count() + 1;
+            $rows[$key] = $row;
+        }
+        $result['list'] = $rows;
+        return $this->ajaxReturn($result);
+    }
+    /*------------------------------------------------------ */
+    //-- 下级会员名单
+    /*------------------------------------------------------ */
+    public function getmenberchainlist()
+    {
+        $user_id = input('user_id', 0, 'intval');
+        $next = input('next', '', 'trim');
+        if ($user_id < 1) {
+            $result['list'] = [];
+            return $this->ajaxReturn($result);
+        }
+        $DividendRole = (new DividendRoleModel)->getRows();
+        $UsersBindModel = new UsersBindModel();
+        $MemberModel = new MemberModel();
+//            $rows = $MemberModel->field('user_id,nick_name,role_id')->where('pid', $user_id)->select();
+        if($next == 'undefined'){
+            $rows = $MemberModel->where('user_id', $user_id)->select();
+        }else{
+            $rows = $MemberModel->where('pid', $user_id)->select();
+        }
+
+        foreach ($rows as $key => $row) {
+            $row['user_id'] = $row['member_id'];
+            $row['nick_name'] = $row['username'];
+            $row['role_name'] = $DividendRole[$row['role_id']]['role_name'];
+            $row['teamCount'] = $MemberModel->where('pid', $row['member_id'])->count() + 1;
             $rows[$key] = $row;
         }
         $result['list'] = $rows;
