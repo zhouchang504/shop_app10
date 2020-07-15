@@ -11,6 +11,15 @@
             <div class="cell_bd">
                 <input type="text" class="fs28 fw_b color_3" id="member_id" placeholder="请输入会员ID/手机号" value="{$member_id}">
             </div>
+            <div class="cell_ft">
+                <span class="fs28 fw_b color_r send-captcha getCode" data-type="AliPay" onclick="checkname()">查询</span>
+            </div>
+        </div>
+        <div class="cell namewarp" style="display: none">
+            <div class="cell_hd"><span class="fs28 color_3 fw_b">会员姓名</span></div>
+            <div class="cell_bd">
+                <span class="fs28 fw_b color_9 countdown time"></span>
+            </div>
         </div>
         <div class="cell">
         	<div class="cell_hd"><span class="fs28 color_3 fw_b">报单金额</span></div>
@@ -29,6 +38,18 @@
 
 {block name="footer"}
 <script type="text/javascript">
+    function checkname() {
+        var arr = new Object();
+        arr.member_id = $('#member_id').val();
+        jq_ajax('{:url("member/api.users/checkName")}', arr, function (res) {
+            if (res.code == 0) {
+                _alert(res.msg);
+                return false;
+            }
+            $('.time').html(res.namestr);
+            $('.namewarp').show();
+        })
+    }
 	$('.editpwd').on('click',function(){
         var arr = new Object();
       	arr.member_id = $('#member_id').val();

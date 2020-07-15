@@ -977,4 +977,24 @@ class Users extends ApiController
         }
         return $this->success('作废成功');
     }
+    /*------------------------------------------------------ */
+    //-- 作废报单
+    /*------------------------------------------------------ */
+    public function checkName()
+    {
+        $member_id = input('member_id',0,'intval');
+        $return = array();
+        if(empty($member_id) || $member_id <= 0){
+            return $this->error('参数错误');
+            $return['code'] = 0;
+            $return['msg'] = '参数错误';
+            return $this->ajaxReturn($return);
+        }
+        $MemberModel = new MemberModel();
+        $member = $MemberModel->where('member_id',$member_id)->find();
+        $return['code'] = 1;
+        $return['namestr'] = $member['username'];
+        return $this->ajaxReturn($return);
+
+    }
 }
