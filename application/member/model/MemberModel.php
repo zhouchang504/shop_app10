@@ -205,9 +205,16 @@ class MemberModel extends BaseModel
                     $this->memberLevelArr[$key] = 1;//临时升级
                     if($this->orderAmoutArr[$key] >= $leveup_1){
                         $this->orderAmoutArr[$key] -= $leveup_1;//扣除升级所需(奖励1)团队业绩
-                        if($sparr[$key]){
-                            $this->orderAmoutArr[$sparr[$key]] += $leveup_1;//给上级加奖励1业绩
-                        }
+                        $spis = $sparr[$key];
+                        do{
+                            if($this->orderOldAmoutArr[$spis] >= $settings['leveup_5']){//(新增需求,拿奖励1,至少要报200)
+                                $this->orderAmoutArr[$spis] += $leveup_1;//给上级加奖励1业绩
+                                break;
+                            }
+                            $pinfo = $this->field('member_id,pid,spid')->where('member_id', $spis)->find();//查询上级
+                            $spis = $pinfo['spid'];
+                        }while(!empty($spis) && $spis > 0);
+
                     }
                 }else{
                     unset($this->orderAmoutArr[$key]);
