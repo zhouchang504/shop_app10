@@ -113,9 +113,10 @@ class MemberModel extends BaseModel
     {
         if (!$startRewardtime) $startRewardtime = strtotime(date("Y-m-1 00:00:00"));
         if (!$stopRewardtime) $stopRewardtime = strtotime(date("Y-m-t 23:59:59"));
-        $leveup_1 = settings('leveup_1');//合格经理业绩门槛
-        $leveup_2_team_amount = settings('leveup_2_team_amount');//初级经理团队内合格经理业绩门槛
-        $distribution_max = settings('distribution_max');//分销奖业绩移动标准
+        $settings = settings(); //获取设置信息
+        $leveup_1 = $settings['leveup_1'];//合格经理业绩门槛
+        $leveup_2_team_amount = $settings['leveup_2_team_amount'];//初级经理团队内合格经理业绩门槛
+        $distribution_max = $settings['distribution_max'];//分销奖业绩移动标准
         $order_amount_list = $this->MemberOrderModel->field('member_id,sum(order_amount) order_amounts')->where('status', '=', '1')->where('createtime', 'between', [$startRewardtime, $stopRewardtime])->group('member_id')->select()->toArray();//团队报单数据
         if ($order_amount_list)foreach ($order_amount_list as $item) {//循环存储团队内每个人当月报单数据
             if ($this->orderOldAmoutArr[$item['member_id']] === null) {
@@ -179,8 +180,8 @@ class MemberModel extends BaseModel
                 if($is_move[$pitem]){
                     continue;
                 }
-                //上级分销业绩不够并且报单业绩不够,就得移动业绩给他
-                if(!$is_dis && $pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max){
+                //上级分销业绩不够并且报单业绩不够,就得移动业绩给他,(新增需求,至少要报200)
+                if(!$is_dis && $pitem && $this->orderDisAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] < $distribution_max && $this->orderOldAmoutArr[$pitem] >= $settings['leveup_5']){
                     $diff = $distribution_max - $this->orderDisAmoutArr[$pitem];
                     $this->orderDisAmoutArr[$pitem] += $diff;
                     $this->orderDisAmoutArr[$item['member_id']] -= $diff;
@@ -236,9 +237,25 @@ class MemberModel extends BaseModel
 //                $this->memberLevelArr[$key] = 6;
 //                continue;
 //            }
-            $son_list = $this->field('member_id')->where('spid', $key)->select()->toArray();//查询下级
-            if($son_list)
-            {
+            if($this->orderOldAmoutArr[$key] < $settings['leveup_5']){
+                continue;//当月报单低于200直接跳过
+            }
+//            $son_list = $this->field('member_id')->where('spid', $key)->select()->toArray();//查询下级
+            $son_list = array();
+            $spid_arr = [$key];
+            do{
+                $new_son_list = $this->field('member_id')->where('spid', 'in', $spid_arr)->select()->toArray();//查询下级
+                $spid_arr = array();
+                if($new_son_list)foreach ($new_son_list as $son){
+                    if($this->orderOldAmoutArr[$son['member_id']] < $settings['leveup_5']){
+                        $spid_arr[] = $son['member_id'];
+                    }else{
+                        $son_list[] = ['member_id'=>$son['member_id']];
+                    }
+                }
+            }while(!empty($spid_arr));
+//            if($key == 2025)dump($son_list);
+            if($son_list){
                 ################################################↓高级总监↓################################################
                 $son_5 = 0;
                 foreach ($son_list as $son){
