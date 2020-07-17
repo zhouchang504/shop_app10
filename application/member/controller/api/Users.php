@@ -817,7 +817,7 @@ class Users extends ApiController
         if(!$MemberInfo)
             $MemberInfo = $MemberModel->where('tel',$input['member_id'])->find();
         if(!$MemberInfo){
-                return $this->error('ID' . $input['member_id'] . ' 会员不存在.');
+            return $this->error('ID/手机号 ' . $input['member_id'] . ' 会员不存在.');
         }else{
             $input['member_id'] = $MemberInfo['member_id'];
         }

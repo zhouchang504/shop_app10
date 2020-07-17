@@ -62,6 +62,15 @@ class Order extends AdminController
             }else if(in_array($search['searchKey'],['pid','spid'])){
                 $uids = $MemberModel->where("pid = '".$search['keyword']."' OR spid = '".$search['keyword']."'")->column('member_id');
                 $uids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
+            }else if(in_array($search['searchKey'],['puser_id'])){
+                $son_uids = [$search['keyword']];
+                $i = 0;
+                do{
+                    $i++;
+                    $uids = array_merge($uids,$son_uids);
+                    $son_uids = $MemberModel->where("spid" ,'in' ,$son_uids)->column('member_id');
+                }while(!empty($son_uids) && $i < 100);
+                $uids[] = -1;//增加这个为了以上查询为空时，限制本次主查询失效
             }else{
                 $where[] = [$search['searchKey'], 'eq',"".$search['keyword'].""];
             }
