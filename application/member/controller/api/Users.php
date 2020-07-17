@@ -782,6 +782,12 @@ class Users extends ApiController
         if (!is_numeric($input['pid']))  return $this->error('推荐人ID必须是数字.');
         if (!is_numeric($input['spid']))  return $this->error('服务上级ID必须是数字.');
         $MemberModel = new MemberModel();
+        $member_nums = $MemberModel->where('member_id',$input['pid'])->count();
+        if($member_nums == 0)
+            return $this->error('推荐人不存在');
+        $member_nums = $MemberModel->where('member_id',$input['spid'])->count();
+        if($member_nums == 0)
+            return $this->error('服务上级不存在');
         $member_nums = $MemberModel->where('tel',$input['tel'])->count();
         if($member_nums > 0)
             return $this->error('手机号已存在');
@@ -810,7 +816,11 @@ class Users extends ApiController
         $MemberInfo = $MemberModel->where('member_id',$input['member_id'])->find();
         if(!$MemberInfo)
             $MemberInfo = $MemberModel->where('tel',$input['member_id'])->find();
-        if(!$MemberInfo)return $this->error('ID' . $input['member_id'] . ' 会员不存在.');
+        if(!$MemberInfo){
+                return $this->error('ID' . $input['member_id'] . ' 会员不存在.');
+        }else{
+            $input['member_id'] = $MemberInfo['member_id'];
+        }
         $insertData = $input;
         $insertData['user_id'] = $this->userInfo['user_id'];
         $insertData['createtime'] = time();
@@ -978,7 +988,7 @@ class Users extends ApiController
         return $this->success('作废成功');
     }
     /*------------------------------------------------------ */
-    //-- 作废报单
+    //-- 查询用户名
     /*------------------------------------------------------ */
     public function checkName()
     {

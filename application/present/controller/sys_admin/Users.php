@@ -94,6 +94,12 @@ class Users extends AdminController
     /*------------------------------------------------------ */
     public function beforeAdd($row)
     {
+        $member_nums = $this->Model->where('member_id',$row['pid'])->count();
+        if($member_nums == 0)
+            return $this->error('推荐人不存在');
+        $member_nums = $this->Model->where('member_id',$row['spid'])->count();
+        if($member_nums == 0)
+            return $this->error('服务上级不存在');
         $member_nums = $this->Model->where('tel',$row['tel'])->count();
         if($member_nums > 0)
             return $this->error('手机号已存在');
@@ -118,6 +124,12 @@ class Users extends AdminController
         # 修改推荐上级 是否头咬尾
         # 修改服务上级 是否头咬尾
         $member_id = input('member_id');
+        $member_nums = $this->Model->where('member_id',$row['pid'])->count();
+        if($member_nums == 0)
+            return $this->error('推荐人不存在');
+        $member_nums = $this->Model->where('member_id',$row['spid'])->count();
+        if($member_nums == 0)
+            return $this->error('服务上级不存在');
         $member_nums = $this->Model->where('tel',$row['tel'])->where('member_id','neq',$member_id)->count();
         if($member_nums > 0)
             return $this->error('手机号已存在');

@@ -123,10 +123,15 @@ class Order extends AdminController
     {
         if($row['status'] == '1'){
             $order_amount = $row['order_amount'];
-            $use_integral = (new AccountModel)->where('user_id',$row['user_id'])->value('use_integral');
+            $AccountModel = new AccountModel();
+            $use_integral = $AccountModel->where('user_id',$row['user_id'])->value('use_integral');
             if ($use_integral < $order_amount){
                 return $this->error('PV不足');
             }
+            $MemberModel = new MemberModel();
+            $member_nums = $MemberModel->where('member_id',$row['member_id'])->count();
+            if($member_nums == 0)
+                return $this->error('ID' . $row['member_id'] . ' 会员不存在.');
             $AccountLogModel = new AccountLogModel();
             $inData['use_integral'] = $order_amount * -1;
             $inData['change_type'] = 11;
@@ -179,6 +184,10 @@ class Order extends AdminController
                 $order_amount = 0;
             }
         }
+        $MemberModel = new MemberModel();
+        $member_nums = $MemberModel->where('member_id',$row['member_id'])->count();
+        if($member_nums == 0)
+            return $this->error('ID' . $row['member_id'] . ' 会员不存在.');
         if(abs($order_amount) > 0){
             $use_integral = (new AccountModel)->where('user_id',$row['user_id'])->value('use_integral');
             if ($use_integral < $order_amount){
