@@ -513,7 +513,19 @@ class MemberModel extends BaseModel
             //////////////////////查询出层级配对奖获得人//////////////////////
             $_son_ids = [$key];
             do{
-                $list = $this->where('spid','in',$_son_ids)->select()->toArray();
+//                $list = $this->where('spid','in',$_son_ids)->select()->toArray();
+                $list = array();
+                do{
+                    $list_son = $this->where('spid','in',$_son_ids)->select();
+                    $_son_ids = array();
+                    if($list_son)foreach ($list_son as $item){
+                        if($this->orderOldAmoutArr[$item['member_id']] >= $settings['leveup_2']){
+                            $list[] = $item;
+                        }else{
+                            $_son_ids[] = $item['member_id'];
+                        }
+                    }
+                }while(!empty($_son_ids));
                 $_son_ids = array();
                 if(count($list)){
                     foreach ($list as $item){//找出所有下级存起来
