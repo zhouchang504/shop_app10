@@ -156,7 +156,7 @@ class MemberModel extends BaseModel
             $parr = array();//推荐上级们数组
             do {//从自己循环找上级
                 $this->orderMaxAmoutArr[$pinfo['member_id']] += $this->orderOldAmoutArr[$item['member_id']];//累加最多业绩
-                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max && $pinfo['spid']>0)$parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移(作废)
+                if($this->orderOldAmoutArr[$item['member_id']] >= $distribution_max && $pinfo['spid']>0 && $this->orderOldAmoutArr[$pinfo['spid']] >= $settings['leveup_2'])$parr[] = $pinfo['spid'];//记录本人的上级们(本人需要报单满9000,上级需要有等级并且有报单200)
 //                $parr[] = $pinfo['spid'];//记录本人的上级们,本人满了才能移
                 $pinfo = $this->field('member_id,spid')->where('member_id', $pinfo['spid'])->find();//查询上级
             } while ($pinfo);
