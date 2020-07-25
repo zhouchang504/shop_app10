@@ -154,6 +154,8 @@ class Reward extends AdminController
                         if($val == 'role_id'){
                             $rode_name = $member['role_id'] == 0 ? '粉丝' : $roleList[$member['role_id']]['role_name'];
                             $data .= $rode_name  . "\t";
+                        }else if($val == 'banknumber'){
+                            $data .= '\'' . $member[$val] . "\t";
                         }else{
                             $data .= $member[$val] . "\t";
                         }

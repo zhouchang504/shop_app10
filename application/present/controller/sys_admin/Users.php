@@ -129,7 +129,7 @@ class Users extends AdminController
             if (empty($rows))return;
             foreach ($rows as $row) {
                 foreach ($export_arr as $val) {
-                    if (strstr($val, '_time')) {
+                    if (strstr($val, '_time') || $val == 'regtime') {
                         $data .= dateTpl($row[$val]) . "\t";
                     }elseif($val == 'balance_moneys'){
                         $whereAccountLog = [];
@@ -143,6 +143,8 @@ class Users extends AdminController
                     }elseif($val == 'role_id'){
                         $rode_name = $row[$val] == 0 ? '粉丝' : $roleList[$row[$val]]['role_name'];
                         $data .= $rode_name  . "\t";
+                    }elseif($val == 'banknumber'){
+                        $data .= str_replace(array("\r\n", "\n", "\r"), '', '\''.strip_tags($row[$val])) . "\t";
                     } else {
                         $data .= str_replace(array("\r\n", "\n", "\r"), '', strip_tags($row[$val])) . "\t";
                     }
