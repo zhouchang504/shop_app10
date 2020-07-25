@@ -57,18 +57,27 @@ class Users extends AdminController
         }
         $search['role_id'] = input('role_id', '', 'trim');
         if ($search['role_id']) $where[] = ['role_id','=',$search['role_id']];
-        
+        $time_type = input('time_type', 'reg_time', 'trim');
+        $time_type = empty($time_type) ? 'reg_time' : $time_type;
         $reportrange = input('reportrange');
-        if (empty($reportrange) == false){
+        if (empty($reportrange) == false && $time_type == 'reg_time'){
             $dtime = explode('-',$reportrange);
             $where[] = ['regtime','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
-        }else{
-            $where[] = ['regtime','between',[strtotime("-6 months"),time()]];
+        }
+        $export = input('export', 0, 'intval');
+        if ($export > 0) {
+            return $this->exportList($where);
         }
         $this->data = $this->getPageList($this->Model, $where);
         $MemberAccountLogModel = new MemberAccountLogModel();
         foreach ($this->data['list'] as $item){
-            $balance_moneys = $MemberAccountLogModel->where('member_id',$item['member_id'])->sum('balance_money');
+            $whereAccountLog = [];
+            $whereAccountLog[] = ['member_id', '=', $item['member_id']];
+            if (empty($reportrange) == false && $time_type == 'reward_time'){
+                $dtime = explode('-',$reportrange);
+                $whereAccountLog[] = ['change_time','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
+            }
+            $balance_moneys = $MemberAccountLogModel->where($whereAccountLog)->sum('balance_money');
             $item['balance_moneys'] = $balance_moneys;
             $_list[] = $item;
         }
@@ -80,6 +89,74 @@ class Users extends AdminController
             return $this->success('','',$this->data);
         }
         return true;
+    }
+    /*------------------------------------------------------ */
+    //-- 导出数据
+    /*------------------------------------------------------ */
+    public function exportList($where)
+    {
+        $time_type = input('time_type', 'reg_time', 'trim');
+        $time_type = empty($time_type) ? 'reg_time' : $time_type;
+        $reportrange = input('reportrange');
+        $count = $this->Model->where($where)->order('member_id DESC')->count('member_id');
+        if ($count < 1) return $this->error('没有找到可导出的日志资料！');
+        $filename = '会员列表资料_' . date("YmdHis") . '.xls';
+        $export_arr['会员ID'] = 'member_id';
+        $export_arr['昵称'] = 'username';
+        $export_arr['手机号'] = 'tel';
+        $export_arr['会员等级'] = 'role_id';
+        $export_arr['推荐上级'] = 'pid';
+        $export_arr['服务上级'] = 'spid';
+        $export_arr['所属专卖店'] = 'user_id';
+        $export_arr['奖励总额'] = 'balance_moneys';
+        $export_arr['注册时间'] = 'regtime';
+        $export_arr['银行卡号'] = 'banknumber';
+        $export_arr['开户行地址'] = 'bankaddress';
+
+        $page = 0;
+        $page_size = 500;
+        $page_count = 200;
+
+        $title = join("\t", array_keys($export_arr)) . "\t";
+
+        $MemberAccountLogModel = new MemberAccountLogModel();
+        $DividendRoleModel = new DividendRoleModel();
+        $roleList = $DividendRoleModel->getRows();
+        $data = '';
+        do {
+            $rows = $this->Model->where($where)->order('member_id DESC')->limit($page * $page_size, $page_size)->select();
+
+            if (empty($rows))return;
+            foreach ($rows as $row) {
+                foreach ($export_arr as $val) {
+                    if (strstr($val, '_time')) {
+                        $data .= dateTpl($row[$val]) . "\t";
+                    }elseif($val == 'balance_moneys'){
+                        $whereAccountLog = [];
+                        $whereAccountLog[] = ['member_id', '=', $row['member_id']];
+                        if (empty($reportrange) == false && $time_type == 'reward_time'){
+                            $dtime = explode('-',$reportrange);
+                            $whereAccountLog[] = ['change_time','between',[strtotime($dtime[0]),strtotime($dtime[1])+86399]];
+                        }
+                        $balance_moneys = $MemberAccountLogModel->where($whereAccountLog)->sum('balance_money');
+                        $data .= $balance_moneys  . "\t";
+                    }elseif($val == 'role_id'){
+                        $rode_name = $row[$val] == 0 ? '粉丝' : $roleList[$row[$val]]['role_name'];
+                        $data .= $rode_name  . "\t";
+                    } else {
+                        $data .= str_replace(array("\r\n", "\n", "\r"), '', strip_tags($row[$val])) . "\t";
+                    }
+                }
+                $data .= "\n";
+            }
+            $page++;
+        } while ($page <= $page_count);
+
+        $filename = iconv('utf-8', 'GBK//IGNORE', $filename);
+        header("Content-type: application/vnd.ms-excel; charset=utf-8");
+        header("Content-Disposition: attachment; filename=$filename");
+        echo iconv('utf-8', 'GBK//IGNORE', $title . "\n" . $data) . "\t";
+        exit;
     }
     /*------------------------------------------------------ */
     //-- 信息页调用

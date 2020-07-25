@@ -32,7 +32,9 @@
                 <option value="spid">服务上级</option>
                 <option value="user_id">所属专卖店</option>
             </select>
+            <input type="hidden" value="0" name="export">
             <input type="text" class="form-control input-large" value="{$search.keyword}" name="keyword" placeholder="请输入" data-rule-required="true" />
+            <a href="javascript:;" onclick="ExportLog()" title="导出" class="btn btn-sm btn-default fr m-t-md m-r"><i class="fa fa-file-excel-o m-r-xs"></i>导出列表</a>
             <button class="btn btn-sm btn-default-iq" type="submit" title="搜索"><i class="fa fa-search"></i></button>
         </div>
     </form>
@@ -45,5 +47,11 @@
         </div>
     </section>
 </section>
-
+<script>
+    function ExportLog(){
+        $('input[name="export"]').val('1');
+        $('#forms').submit();
+        $('input[name="export"]').val('0');
+    }
+</script>
 {/block}
